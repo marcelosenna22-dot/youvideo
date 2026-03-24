@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tube Vídeo Smart</title>
+	<link rel="manifest" href="manifest.json">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+    <style>
+        :root { --primary: #ff0000; --bg: #121212; --card: #1e1e1e; --text: #ffffff; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .player-container {
+            position: relative;
+            width: 100%;
+            max-width: 850px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        video { width: 100%; display: block; z-index: 1; }
+
+        /* Camada centralizada que não cobre a barra de ferramentas inferior */
+        .overlay-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 85%; /* Deixa a base livre para os controles nativos */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* Mouse atravessa a camada */
+            z-index: 5;
+        }
+
+        .player-container:hover .overlay-controls {
+            opacity: 1;
+        }
+
+        .btn-overlay {
+            pointer-events: auto; /* Reativa o clique apenas nos botões */
+            background: rgba(20, 20, 20, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 55px;
+            height: 55px;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-overlay:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .search-box { width: 100%; max-width: 600px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: var(--card); color: white; outline: none; }
+        .results-list { width: 100%; max-width: 600px; margin-top: 20px; display: grid; gap: 10px; }
+        .video-item { background: var(--card); padding: 15px; border-radius: 8px; cursor: pointer; border-left: 5px solid transparent; }
+        .video-item:hover { background: #2a2a2a; border-left-color: var(--primary); }
+        #playingNow { margin-top: 10px; color: #888; font-weight: normal; }
+    </style>
+</head>
+<body>
+
+    <header><h1>Tube Vídeo Smart</h1></header>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Buscar vídeo..." oninput="searchVideos()">
+    </div>
+
+    <div class="player-container">
+        <video id="videoPlayer" controls autoplay>
+            <source id="videoSource" src="" type="video/mp4">
+        </video>
+
+        <div class="overlay-controls">
+            <button class="btn-overlay" onclick="playPrevious()">⏮</button>
+            <button class="btn-overlay" onclick="skipTime(-10)">-10s</button>
+            <button class="btn-overlay" onclick="skipTime(10)">+10s</button>
+            <button class="btn-overlay" onclick="playNext()">⏭</button>
+        </div>
+    </div>
+
+    <h3 id="playingNow">Selecione um vídeo</h3>
+    <div class="results-list" id="resultsList"></div>
+	<hr style="margin-top: 50px; width: 80%; border: 0.5px solid #333;">
+<div class="admin-section" style="max-width: 600px; width: 100%; padding: 20px; background: var(--card); border-radius: 8px; margin-top: 20px;">
+    <h2 style="color: var(--primary); font-size: 1.2rem;">Cadastrar Novo Vídeo</h2>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <input type="text" id="newTitle" placeholder="Título do Vídeo (Ex: Aula 01)">
+        <input type="text" id="newPath" placeholder="Caminho do Arquivo (Ex: videos/aula1.mp4)">
+        <button class="btn-overlay" style="width: 100%; border-radius: 8px; height: 45px; font-size: 1rem;" onclick="salvarNoFirebase()">Salvar no Banco</button>
+    </div>
+    <p id="statusMsg" style="font-size: 0.8rem; margin-top: 10px; color: #888;"></p>
+</div>
+
+  <script type="module">
+  // 1. TODOS OS IMPORTS NO TOPO
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // 2. CONFIGURAÇÃO
+  const firebaseConfig = {
+    apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I",
+    authDomain: "youvideo-22f8a.firebaseapp.com",
+    databaseURL: "https://youvideo-22f8a-default-rtdb.firebaseio.com",
+    projectId: "youvideo-22f8a",
+    storageBucket: "youvideo-22f8a.firebasestorage.app",
+    messagingSenderId: "179003131728",
+    appId: "1:179003131728:web:03874cc5df997f6c724e55",
+    measurementId: "G-L1L6NXNVH0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const videosRef = ref(db, 'videos');
+
+  const videoPlayer = document.getElementById('videoPlayer');
+  const resultsList = document.getElementById('resultsList');
+  const searchInput = document.getElementById('searchInput');
+  const playingNow = document.getElementById('playingNow');
+
+  let biblioteca = []; 
+  let currentIndex = -1;
+
+  // 3. ESCUTANDO O FIREBASE
+  onValue(videosRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      biblioteca = Object.keys(data).map(key => ({
+        id_firebase: key,
+        ...data[key]
+      }));
+      renderLista(biblioteca);
+    }
+  });
+
+  // 4. FUNÇÕES DO PLAYER (DISPONÍVEIS GLOBALMENTE)
+  window.carregarVideo = function(index) {
+    if (index < 0 || index >= biblioteca.length) return;
+    currentIndex = index;
+    videoPlayer.src = biblioteca[index].arquivo;
+    videoPlayer.load();
+    videoPlayer.play();
+    playingNow.innerText = "Assistindo: " + biblioteca[index].titulo;
+  };
+
+  window.skipTime = function(s) { videoPlayer.currentTime += s; };
+  window.playNext = function() { carregarVideo((currentIndex + 1) % biblioteca.length); };
+  window.playPrevious = function() { carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length); };
+
+  // 5. FUNÇÃO DE SALVAMENTO
+  window.salvarNoFirebase = function() {
+    const titulo = document.getElementById('newTitle').value;
+    const arquivo = document.getElementById('newPath').value;
+    const status = document.getElementById('statusMsg');
+
+    if (titulo === "" || arquivo === "") {
+        status.innerText = "⚠️ Preencha todos os campos!";
+        status.style.color = "orange";
+        return;
+    }
+
+    push(videosRef, { titulo, arquivo }).then(() => {
+        status.innerText = "✅ Vídeo salvo com sucesso!";
+        status.style.color = "lightgreen";
+        document.getElementById('newTitle').value = "";
+        document.getElementById('newPath').value = "";
+    }).catch((e) => {
+        status.innerText = "❌ Erro: " + e.message;
+        status.style.color = "red";
+    });
+  };
+
+  // 6. PESQUISA E RENDERIZAÇÃO
+  window.searchVideos = function() {
+    const termo = searchInput.value.toLowerCase();
+    const filtrados = biblioteca.filter(v => v.titulo.toLowerCase().includes(termo));
+    renderLista(filtrados);
+  };
+
+  function renderLista(lista) {
+    resultsList.innerHTML = '';
+    lista.forEach((video) => {
+        const realIndex = biblioteca.findIndex(b => b.titulo === video.titulo);
+        const d = document.createElement('div');
+        d.className = 'video-item'; 
+        d.innerText = video.titulo;
+        d.onclick = () => carregarVideo(realIndex);
+        resultsList.appendChild(d);
+    });
+  }
+
+  videoPlayer.onended = () => playNext();
+  
+  // Inicia a lista vazia ou carrega o que já existe
+  searchVideos(); 
+</script>
+</script>
+</body>
+</html>
