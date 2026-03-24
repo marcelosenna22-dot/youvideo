@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Tube Vídeo</title>
+    <style>
+        :root { --primary: #ff0000; --bg: #121212; --card: #1e1e1e; --text: #ffffff; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .admin-card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        h2 { color: var(--primary); margin-top: 0; }
+
+        .input-group { margin-bottom: 20px; }
+
+        label { display: block; margin-bottom: 8px; color: #aaa; font-size: 0.9rem; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #252525;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        button:hover { background: #cc0000; transform: translateY(-2px); }
+
+        #statusMsg {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+
+    <div class="admin-card">
+        <h2>Adicionar Vídeo</h2>
+        
+        <div class="input-group">
+            <label>Título do Vídeo</label>
+            <input type="text" id="newTitle" placeholder="Ex: Aula de Firebase">
+        </div>
+
+        <div class="input-group">
+            <label>Caminho/Nome do Arquivo</label>
+            <input type="text" id="newPath" placeholder="Ex: videos/aula1.mp4">
+        </div>
+
+        <button onclick="salvarNoFirebase()">Cadastrar no Sistema</button>
+        
+        <p id="statusMsg"></p>
+    </div>
+
+    <a href="index.html" class="back-link">← Voltar para o Player</a>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // CONFIGURAÇÃO (A mesma do seu index.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I",
+            authDomain: "youvideo-22f8a.firebaseapp.com",
+            databaseURL: "https://youvideo-22f8a-default-rtdb.firebaseio.com",
+            projectId: "youvideo-22f8a",
+            storageBucket: "youvideo-22f8a.firebasestorage.app",
+            messagingSenderId: "179003131728",
+            appId: "1:179003131728:web:03874cc5df997f6c724e55"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const videosRef = ref(db, 'videos');
+
+        window.salvarNoFirebase = function() {
+            const titulo = document.getElementById('newTitle').value;
+            const arquivo = document.getElementById('newPath').value;
+            const status = document.getElementById('statusMsg');
+
+            if (!titulo || !arquivo) {
+                status.innerText = "⚠️ Preencha todos os campos!";
+                status.style.color = "orange";
+                return;
+            }
+
+            push(videosRef, {
+                titulo: titulo,
+                arquivo: arquivo
+            }).then(() => {
+                status.innerText = "✅ Vídeo cadastrado com sucesso!";
+                status.style.color = "lightgreen";
+                document.getElementById('newTitle').value = "";
+                document.getElementById('newPath').value = "";
+            }).catch((error) => {
+                status.innerText = "❌ Erro: " + error.message;
+                status.style.color = "red";
+            });
+        };
+    </script>
+</body>
+</html>
