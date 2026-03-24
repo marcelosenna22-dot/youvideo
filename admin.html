@@ -1,4 +1,4 @@
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
         }
 
         h2 { color: #333; text-align: center; margin-bottom: 25px; }
@@ -40,7 +40,6 @@
         }
 
         button {
-            width: 100%;
             padding: 12px;
             border: none;
             border-radius: 8px;
@@ -50,27 +49,36 @@
             transition: 0.3s;
         }
 
-        .btn-save { background-color: #2ecc71; color: white; margin-bottom: 10px; }
+        .btn-save { background-color: #2ecc71; color: white; width: 100%; margin-bottom: 10px; }
         .btn-save:hover { background-color: #27ae60; }
 
-        .btn-delete { background-color: #ff4757; color: white; margin-top: 20px; }
-        .btn-delete:hover { background-color: #ff2e44; }
-
-        hr { border: 0; border-top: 1px solid #eee; margin: 30px 0; }
-
-        .video-list { width: 100%; }
+        .btn-clear-all { background-color: #ff4757; color: white; width: 100%; margin-top: 30px; }
+        
         .video-item {
             background: #fff;
-            padding: 10px 15px;
+            padding: 12px 15px;
             margin-bottom: 10px;
             border-radius: 8px;
-            border-left: 5px solid #ff4757;
+            border: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
+
+        .video-info-text { flex-grow: 1; margin-right: 10px; }
+        .video-info-text b { display: block; color: #333; }
+        .video-info-text span { font-size: 0.75rem; color: #888; word-break: break-all; }
+
+        .btn-delete-single {
+            background-color: #f1f2f6;
+            color: #ff4757;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+        .btn-delete-single:hover { background-color: #ff4757; color: white; }
+
+        hr { border: 0; border-top: 1px solid #eee; margin: 30px 0; }
     </style>
 </head>
 <body>
@@ -79,28 +87,26 @@
         <h2>🚀 Gerenciar Vídeos</h2>
         
         <label>Título do Vídeo:</label>
-        <input type="text" id="titulo" placeholder="Ex: Aula de Programação">
+        <input type="text" id="titulo" placeholder="Ex: Aula 01 - Introdução">
 
-        <label>Link/Caminho do Vídeo:</label>
+        <label>Caminho do Arquivo:</label>
         <input type="text" id="caminho" placeholder="Ex: videos/aula1.mp4">
 
         <button class="btn-save" onclick="salvarVideo()">💾 Salvar Vídeo</button>
 
         <hr>
 
-        <div id="listaVideos" class="video-list">
-            <p style="text-align: center; color: #999;">Carregando lista...</p>
+        <div id="listaVideos">
+            <p style="text-align: center; color: #999;">Carregando sua lista...</p>
         </div>
 
-        <button class="btn-delete" onclick="limparBanco()">🗑️ Limpar Todos os Vídeos</button>
+        <button class="btn-clear-all" onclick="limparBanco()">🗑️ Apagar TUDO (Reset)</button>
     </div>
 
     <script type="module">
-        // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Sua Configuração (Mantenha igual)
         const firebaseConfig = {
             apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I",
             authDomain: "youvideo-22f8a.firebaseapp.com",
@@ -115,44 +121,49 @@
         const db = getDatabase(app);
         const videosRef = ref(db, 'videos');
 
-        // FUNÇÃO PARA SALVAR
+        // SALVAR NOVO VÍDEO
         window.salvarVideo = function() {
             const titulo = document.getElementById('titulo').value;
             const arquivo = document.getElementById('caminho').value;
 
-            if (titulo === "" || arquivo === "") {
-                alert("Por favor, preencha todos os campos!");
+            if (!titulo || !arquivo) {
+                alert("Preencha todos os campos!");
                 return;
             }
 
-            const novoVideoRef = push(videosRef);
-            set(novoVideoRef, {
+            const novoRef = push(videosRef);
+            set(novoRef, {
                 titulo: titulo,
                 arquivo: arquivo,
                 curtidas: 0,
                 compartilhamentos: 0
             }).then(() => {
-                alert("Vídeo cadastrado!");
                 document.getElementById('titulo').value = "";
                 document.getElementById('caminho').value = "";
             });
         };
 
-        // FUNÇÃO PARA LIMPAR TUDO
-        window.limparBanco = function() {
-            if (confirm("⚠️ ATENÇÃO: Deseja realmente APAGAR TODOS os vídeos cadastrados? Isso não pode ser desfeito.")) {
-                remove(videosRef).then(() => {
-                    alert("Base de dados limpa com sucesso!");
-                }).catch((error) => {
-                    alert("Erro ao limpar: " + error.message);
+        // EXCLUIR VÍDEO INDIVIDUAL
+        window.excluirVideo = function(id) {
+            if (confirm("Deseja excluir este vídeo da lista?")) {
+                const itemRef = ref(db, `videos/${id}`);
+                remove(itemRef).then(() => {
+                    console.log("Removido:", id);
                 });
             }
         };
 
-        // LISTAR VÍDEOS NA TELA DO ADMIN
+        // LIMPAR TUDO
+        window.limparBanco = function() {
+            if (confirm("⚠️ Isso apagará TODOS os vídeos. Tem certeza?")) {
+                remove(videosRef);
+            }
+        };
+
+        // LISTAR VÍDEOS COM BOTÃO DE EXCLUIR
         onValue(videosRef, (snapshot) => {
             const listaDiv = document.getElementById('listaVideos');
-            listaDiv.innerHTML = "<h4>Vídeos Online:</h4>";
+            listaDiv.innerHTML = "<h4>Vídeos Cadastrados:</h4>";
             
             const data = snapshot.val();
             if (data) {
@@ -160,11 +171,17 @@
                     const video = data[key];
                     const item = document.createElement('div');
                     item.className = 'video-item';
-                    item.innerHTML = `<span>${video.titulo}</span>`;
+                    item.innerHTML = `
+                        <div class="video-info-text">
+                            <b>${video.titulo}</b>
+                            <span>${video.arquivo}</span>
+                        </div>
+                        <button class="btn-delete-single" onclick="excluirVideo('${key}')">Excluir</button>
+                    `;
                     listaDiv.appendChild(item);
                 });
             } else {
-                listaDiv.innerHTML = "<p style='text-align:center;color:#999;'>Nenhum vídeo encontrado.</p>";
+                listaDiv.innerHTML = "<p style='text-align:center;color:#999;'>Nenhum vídeo na lista.</p>";
             }
         });
     </script>
