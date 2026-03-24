@@ -1,10 +1,10 @@
 {
-  "name": "Tube Vídeo Smart",
-  "short_name": "TubeVideo",
+  "name": "YouVideo Smart",
+  "short_name": "YouVideo",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#ff0000",
+  "background_color": "#0f0c29",
+  "theme_color": "#ff4757",
   "icons": [
     {
       "src": "icon.png",
