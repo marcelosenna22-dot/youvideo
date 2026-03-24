@@ -266,7 +266,8 @@
             placeholder.style.display = 'none'; // Esconde a animação
             videoPlayer.classList.add('active'); // Mostra o vídeo
             
-            videoPlayer.src = video.arquivo;
+            // Isso garante que ele procure a partir da pasta principal do seu site
+videoPlayer.src = window.location.origin + window.location.pathname.replace('index.html', '') + video.arquivo;
             videoPlayer.load();
             videoPlayer.play();
             
