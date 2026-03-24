@@ -5,93 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tube Vídeo Smart</title>
     <link rel="manifest" href="manifest.json">
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
     <style>
-        :root { --primary: #ff0000; --bg: #121212; --card: #1e1e1e; --text: #ffffff; }
+        :root { 
+            --primary: #ff4757; 
+            --bg: #0f0c29; /* Tom de azul marinho muito escuro */
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --card: rgba(255, 255, 255, 0.05); /* Efeito de vidro */
+            --text: #ffffff; 
+        }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
             color: var(--text);
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
 
-        /* Container de Busca e Sugestões */
+        header h1 {
+            font-size: 2rem;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
         .search-container {
             width: 100%;
             max-width: 600px;
-            position: relative; /* Importante para as sugestões flutuarem */
+            position: relative;
             margin-bottom: 30px;
         }
 
         input { 
             width: 100%; 
-            padding: 14px; 
-            border-radius: 24px; /* Estilo arredondado do YT */
-            border: 1px solid #333; 
-            background: var(--card); 
+            padding: 15px 25px; 
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--card);
+            backdrop-filter: blur(10px);
             color: white; 
             outline: none; 
             font-size: 1rem;
             box-sizing: border-box;
+            transition: 0.3s;
         }
 
-        input:focus { border-color: #444; background: #252525; }
+        input:focus { border-color: var(--primary); background: rgba(255,255,255,0.1); }
 
-        /* Lista de Sugestões (Dropdown) */
         .results-list { 
             position: absolute;
-            top: 55px;
+            top: 60px;
             left: 0;
             width: 100%; 
-            background: #212121;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            background: #1e1e2e;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             z-index: 100;
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
-            display: none; /* Escondido por padrão */
+            display: none;
         }
 
-        .video-item { 
-            padding: 12px 20px; 
-            cursor: pointer; 
-            border-bottom: 1px solid #333;
-            display: flex;
-            align-items: center;
-        }
+        .video-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .video-item:hover { background: var(--primary); }
 
-        .video-item:last-child { border-bottom: none; }
-
-        .video-item:hover { background: #383838; }
-
-        .video-item::before {
-            content: "🔍";
-            margin-right: 15px;
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-
-        /* Player */
         .player-container {
             position: relative;
             width: 100%;
             max-width: 850px;
             background: #000;
-            border-radius: 12px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        video { width: 100%; display: block; z-index: 1; }
+        video { width: 100%; display: block; }
+
+        /* Barra de Ações (Curtir/Compartilhar) */
+        .video-info {
+            width: 100%;
+            max-width: 850px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .actions { display: flex; gap: 15px; }
+
+        .btn-action {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover { background: rgba(255,255,255,0.2); }
+        .btn-action.active { color: var(--primary); border-color: var(--primary); }
 
         .overlay-controls {
             position: absolute;
@@ -113,29 +137,26 @@
 
         .btn-overlay {
             pointer-events: auto;
-            background: rgba(20, 20, 20, 0.8);
+            background: rgba(0, 0, 0, 0.6);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 50%;
             cursor: pointer;
-            width: 55px;
-            height: 55px;
-            font-size: 1.2rem;
-            transition: transform 0.2s;
+            width: 60px;
+            height: 60px;
+            font-size: 1.3rem;
         }
 
-        .btn-overlay:hover { background: var(--primary); transform: scale(1.1); }
-
-        #playingNow { margin-top: 15px; color: #aaa; font-weight: normal; font-size: 1.1rem; }
+        #playingNow { font-size: 1.2rem; margin: 0; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <header><h1 style="color: var(--primary); margin-bottom: 25px;">Tube Vídeo</h1></header>
+    <header><h1>Tube Vídeo Smart</h1></header>
 
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Pesquisar..." oninput="searchVideos()" autocomplete="off">
+        <input type="text" id="searchInput" placeholder="O que vamos assistir hoje?" oninput="searchVideos()" autocomplete="off">
         <div class="results-list" id="resultsList"></div>
     </div>
 
@@ -152,21 +173,31 @@
         </div>
     </div>
 
-    <h3 id="playingNow">Aguardando seleção...</h3>
+    <div class="video-info">
+        <h3 id="playingNow">Selecione um vídeo</h3>
+        <div class="actions">
+            <button class="btn-action" onclick="toggleLike(this)">
+                <span id="likeIcon">🤍</span> <small>Curtir</small>
+            </button>
+            <button class="btn-action" onclick="compartilhar()">
+                <span>🔗</span> <small>Compartilhar</small>
+            </button>
+        </div>
+    </div>
 
     <script type="module">
+        // Importações e Configuração do Firebase (MANTENHA AS SUAS CHAVES AQUI)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I",
-    authDomain: "youvideo-22f8a.firebaseapp.com",
-    databaseURL: "https://youvideo-22f8a-default-rtdb.firebaseio.com",
-    projectId: "youvideo-22f8a",
-    storageBucket: "youvideo-22f8a.firebasestorage.app",
-    messagingSenderId: "179003131728",
-    appId: "1:179003131728:web:03874cc5df997f6c724e55",
-    measurementId: "G-L1L6NXNVH0"
+            authDomain: "youvideo-22f8a.firebaseapp.com",
+            databaseURL: "https://youvideo-22f8a-default-rtdb.firebaseio.com",
+            projectId: "youvideo-22f8a",
+            storageBucket: "youvideo-22f8a.firebasestorage.app",
+            messagingSenderId: "179003131728",
+            appId: "1:179003131728:web:03874cc5df997f6c724e55"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -181,18 +212,13 @@
         let biblioteca = [];
         let currentIndex = -1;
 
-        // Carrega dados do Firebase
         onValue(videosRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                biblioteca = Object.keys(data).map(key => ({
-                    id_firebase: key,
-                    ...data[key]
-                }));
+                biblioteca = Object.keys(data).map(key => ({ id_firebase: key, ...data[key] }));
             }
         });
 
-        // Funções do Player
         window.carregarVideo = function(index) {
             if (index < 0 || index >= biblioteca.length) return;
             currentIndex = index;
@@ -200,31 +226,23 @@
             videoPlayer.load();
             videoPlayer.play();
             playingNow.innerText = biblioteca[index].titulo;
-            resultsList.style.display = 'none'; // Fecha sugestões ao clicar
-            searchInput.value = ''; // Limpa busca
+            resultsList.style.display = 'none';
+            searchInput.value = '';
+            // Resetar botão de like ao trocar vídeo
+            document.querySelector('.btn-action').classList.remove('active');
+            document.getElementById('likeIcon').innerText = "🤍";
         };
 
         window.skipTime = function(s) { videoPlayer.currentTime += s; };
         window.playNext = function() { carregarVideo((currentIndex + 1) % biblioteca.length); };
         window.playPrevious = function() { carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length); };
 
-        // Busca com Sugestões Dinâmicas
         window.searchVideos = function() {
             const termo = searchInput.value.toLowerCase();
-            
-            if (termo.length === 0) {
-                resultsList.style.display = 'none';
-                return;
-            }
-
+            if (termo.length === 0) { resultsList.style.display = 'none'; return; }
             const filtrados = biblioteca.filter(v => v.titulo.toLowerCase().includes(termo));
-
-            if (filtrados.length > 0) {
-                renderLista(filtrados);
-                resultsList.style.display = 'block';
-            } else {
-                resultsList.style.display = 'none';
-            }
+            if (filtrados.length > 0) { renderLista(filtrados); resultsList.style.display = 'block'; }
+            else { resultsList.style.display = 'none'; }
         };
 
         function renderLista(lista) {
@@ -232,14 +250,26 @@
             lista.forEach((video) => {
                 const realIndex = biblioteca.findIndex(b => b.titulo === video.titulo);
                 const d = document.createElement('div');
-                d.className = 'video-item'; 
-                d.innerText = video.titulo;
+                d.className = 'video-item'; d.innerText = video.titulo;
                 d.onclick = () => carregarVideo(realIndex);
                 resultsList.appendChild(d);
             });
         }
 
-        // Fechar sugestões ao clicar fora
+        // Funções Novas: Curtir e Compartilhar
+        window.toggleLike = function(btn) {
+            btn.classList.toggle('active');
+            const icon = document.getElementById('likeIcon');
+            icon.innerText = btn.classList.contains('active') ? "❤️" : "🤍";
+        };
+
+        window.compartilhar = function() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("Link do app copiado! Agora é só enviar para os amigos.");
+            });
+        };
+
         document.addEventListener('click', (e) => {
             if (!document.querySelector('.search-container').contains(e.target)) {
                 resultsList.style.display = 'none';
