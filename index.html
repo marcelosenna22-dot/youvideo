@@ -16,87 +16,63 @@
 
         /* --- SPLASH SCREEN --- */
         #splash {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f0c29;
-            display: flex; justify-content: center; align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f0c29; display: flex; justify-content: center; align-items: center;
             z-index: 9999; transition: opacity 0.8s ease;
         }
-        .splash-text {
-            font-size: 2.8rem; font-weight: 700; color: #fff;
-            animation: glow-text 2s ease-in-out infinite alternate;
-        }
+        .splash-text { font-size: 2.8rem; font-weight: 700; color: #fff; animation: glow-text 2s ease-in-out infinite alternate; }
         .splash-text span { color: var(--primary); }
-        @keyframes glow-text {
-            from { text-shadow: 0 0 10px rgba(255,255,255,0.2); transform: scale(0.95); }
-            to { text-shadow: 0 0 30px var(--primary); transform: scale(1); }
-        }
+        @keyframes glow-text { from { text-shadow: 0 0 10px rgba(255,255,255,0.2); transform: scale(0.95); } to { text-shadow: 0 0 30px var(--primary); transform: scale(1); } }
 
         /* --- ESTILOS GERAIS --- */
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text);
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh;
+            font-family: 'Poppins', sans-serif; background: var(--bg-gradient);
+            background-attachment: fixed; color: var(--text); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        .search-container { width: 100%; max-width: 600px; position: relative; margin-bottom: 25px; }
+        .search-container { width: 100%; max-width: 600px; position: relative; margin-bottom: 25px; display: flex; gap: 10px; }
         input { 
-            width: 100%; padding: 14px 25px; border-radius: 50px;
+            flex-grow: 1; padding: 14px 25px; border-radius: 50px;
             border: 1px solid rgba(255,255,255,0.1); background: var(--card);
-            backdrop-filter: blur(10px); color: white; outline: none; box-sizing: border-box;
+            backdrop-filter: blur(10px); color: white; outline: none;
         }
 
-        /* --- PLAYER CONTAINER --- */
+        .btn-fav-toggle {
+            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
+            color: white; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.2rem;
+        }
+
+        /* --- PLAYER --- */
         .player-container {
             width: 100%; max-width: 850px; background: #000;
             border-radius: 20px; overflow: hidden; position: relative;
             aspect-ratio: 16 / 9; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.1);
         }
-
-        .player-placeholder {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: radial-gradient(circle, #1e1e3f 0%, #000 100%); z-index: 1;
-        }
+        .player-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1e1e3f 0%, #000 100%); z-index: 1; }
         .wave { width: 5px; height: 30px; background: var(--primary); margin: 0 3px; border-radius: 10px; animation: wave-anim 1s linear infinite; }
         @keyframes wave-anim { 0%, 100% { height: 10px; } 50% { height: 50px; } }
-
-        /* VIDEO CONFIG */
         video { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 2; display: none; }
         video.active { display: block; }
 
-        /* CAMADA DE CONTROLES PERSONALIZADOS (Ajustada para não cobrir a barra de baixo) */
-        .overlay-controls {
-            position: absolute; top: 0; left: 0; width: 100%; 
-            height: 75%; /* Libera os 25% de baixo para os controles nativos */
-            display: flex; justify-content: center; align-items: center;
-            gap: 20px; opacity: 0; transition: 0.3s;
-            background: rgba(0,0,0,0.2); z-index: 10; pointer-events: none;
-        }
+        .overlay-controls { position: absolute; top: 0; left: 0; width: 100%; height: 75%; display: flex; justify-content: center; align-items: center; gap: 20px; opacity: 0; transition: 0.3s; background: rgba(0,0,0,0.2); z-index: 10; pointer-events: none; }
         .player-container:hover .overlay-controls { opacity: 1; }
-        .btn-overlay {
-            background: rgba(0,0,0,0.7); color: white; border: none;
-            padding: 15px; border-radius: 50%; cursor: pointer;
-            width: 60px; height: 60px; font-size: 1.2rem; pointer-events: auto;
-        }
+        .btn-overlay { background: rgba(0,0,0,0.7); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; width: 60px; height: 60px; font-size: 1.2rem; pointer-events: auto; }
 
-        /* --- INFO BOX --- */
+        /* --- INFO & ACTIONS --- */
         .video-info { width: 100%; max-width: 850px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
         .actions { display: flex; gap: 10px; }
-        .btn-action {
-            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-            color: white; padding: 8px 15px; border-radius: 20px;
-            display: flex; align-items: center; gap: 6px; cursor: pointer;
-        }
-        .btn-action.active { border-color: var(--primary); color: var(--primary); }
+        .btn-action { background: var(--card); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .btn-action.active { border-color: gold; color: gold; }
 
-        .results-list { position: absolute; top: 60px; left: 0; width: 100%; background: #1e1e2e; border-radius: 15px; z-index: 100; max-height: 250px; overflow-y: auto; display: none; }
-        .video-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        /* --- LISTAS (BUSCA E FAVORITOS) --- */
+        .results-list, .favorites-panel { 
+            position: absolute; top: 60px; left: 0; width: 100%; 
+            background: #1e1e2e; border-radius: 15px; z-index: 100; 
+            max-height: 300px; overflow-y: auto; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .video-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
+        .video-item:hover { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
@@ -109,18 +85,18 @@
 
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Pesquisar vídeos..." oninput="searchVideos()" autocomplete="off">
+        <button class="btn-fav-toggle" onclick="toggleFavoritesPanel()" title="Meus Favoritos">⭐</button>
         <div class="results-list" id="resultsList"></div>
+        <div class="favorites-panel" id="favoritesPanel"></div>
     </div>
 
     <div class="player-container">
         <div class="player-placeholder" id="placeholder">
             <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
         </div>
-        
         <video id="videoPlayer" controls autoplay playsinline controlslist="nodownload">
             <source src="" type="video/mp4">
         </video>
-
         <div class="overlay-controls">
             <button class="btn-overlay" onclick="playPrevious()">⏮</button>
             <button class="btn-overlay" onclick="skipTime(-10)">-10s</button>
@@ -132,6 +108,9 @@
     <div class="video-info">
         <h3 id="playingNow">Pronto para começar!</h3>
         <div class="actions">
+            <button class="btn-action" id="favBtn" onclick="toggleFavorite()">
+                <span id="favIcon">☆</span>
+            </button>
             <button class="btn-action" id="likeBtn" onclick="registrarCurtida()">
                 <span id="likeIcon">🤍</span> <b id="likeCount">0</b>
             </button>
@@ -162,16 +141,17 @@
         const videoPlayer = document.getElementById('videoPlayer');
         const placeholder = document.getElementById('placeholder');
         const resultsList = document.getElementById('resultsList');
+        const favoritesPanel = document.getElementById('favoritesPanel');
         const searchInput = document.getElementById('searchInput');
 
         let biblioteca = [];
         let currentIndex = -1;
+        let meusFavoritos = JSON.parse(localStorage.getItem('favs_youvideo')) || [];
 
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const splash = document.getElementById('splash');
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 800);
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash').style.display = 'none', 800);
             }, 3000);
         });
 
@@ -193,72 +173,107 @@
             if (index < 0 || index >= biblioteca.length) return;
             currentIndex = index;
             const video = biblioteca[index];
-            
             placeholder.style.display = 'none';
             videoPlayer.classList.add('active');
-            
-            // Corrige o caminho para o GitHub Pages
             videoPlayer.src = video.arquivo;
-            
             videoPlayer.load();
-            
-            // Tenta dar Play com áudio
-            const playPromise = videoPlayer.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    videoPlayer.muted = false; // Começa com som se permitido
-                }).catch(error => {
-                    videoPlayer.muted = true; // Começa mudo se o navegador bloquear
-                    videoPlayer.play();
-                });
-            }
+            videoPlayer.play().catch(() => { videoPlayer.muted = true; videoPlayer.play(); });
             
             document.getElementById('playingNow').innerText = video.titulo;
             document.getElementById('likeCount').innerText = video.curtidas || 0;
             document.getElementById('shareCount').innerText = video.compartilhamentos || 0;
             document.getElementById('likeIcon').innerText = "🤍";
-            document.getElementById('likeBtn').classList.remove('active');
+            
+            // Atualiza ícone de favorito
+            checkFavoriteStatus(video.id_firebase);
+            
             resultsList.style.display = 'none';
+            favoritesPanel.style.display = 'none';
             searchInput.value = '';
         };
 
-        window.registrarCurtida = function() {
+        // --- LÓGICA DE FAVORITOS ---
+        window.toggleFavorite = function() {
             if (currentIndex === -1) return;
             const videoId = biblioteca[currentIndex].id_firebase;
-            update(ref(db, `videos/${videoId}`), { curtidas: increment(1) });
+            const idx = meusFavoritos.indexOf(videoId);
+            
+            if (idx > -1) {
+                meusFavoritos.splice(idx, 1);
+            } else {
+                meusFavoritos.push(videoId);
+            }
+            
+            localStorage.setItem('favs_youvideo', JSON.stringify(meusFavoritos));
+            checkFavoriteStatus(videoId);
+        };
+
+        function checkFavoriteStatus(id) {
+            const isFav = meusFavoritos.includes(id);
+            document.getElementById('favIcon').innerText = isFav ? "⭐" : "☆";
+            document.getElementById('favBtn').classList.toggle('active', isFav);
+        }
+
+        window.toggleFavoritesPanel = function() {
+            if (favoritesPanel.style.display === 'block') {
+                favoritesPanel.style.display = 'none';
+            } else {
+                renderFavorites();
+                favoritesPanel.style.display = 'block';
+                resultsList.style.display = 'none';
+            }
+        };
+
+        function renderFavorites() {
+            favoritesPanel.innerHTML = '<h4 style="padding:15px;margin:0;color:gold;">⭐ Meus Favoritos</h4>';
+            const favsData = biblioteca.filter(v => meusFavoritos.includes(v.id_firebase));
+            
+            if (favsData.length === 0) {
+                favoritesPanel.innerHTML += '<p style="padding:15px;color:#888;">Nenhum favorito ainda.</p>';
+                return;
+            }
+
+            favsData.forEach(video => {
+                const realIndex = biblioteca.findIndex(b => b.id_firebase === video.id_firebase);
+                const d = document.createElement('div');
+                d.className = 'video-item';
+                d.innerHTML = `<span>${video.titulo}</span> <span>▶️</span>`;
+                d.onclick = () => carregarVideo(realIndex);
+                favoritesPanel.appendChild(d);
+            });
+        }
+
+        // --- OUTRAS FUNÇÕES ---
+        window.registrarCurtida = function() {
+            if (currentIndex === -1) return;
+            update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { curtidas: increment(1) });
             document.getElementById('likeIcon').innerText = "❤️";
-            document.getElementById('likeBtn').classList.add('active');
         };
 
         window.registrarCompartilhamento = function() {
             if (currentIndex === -1) return;
-            const videoId = biblioteca[currentIndex].id_firebase;
             if (navigator.share) {
                 navigator.share({ title: 'YouVideo Smart', url: window.location.href }).then(() => {
-                    update(ref(db, `videos/${videoId}`), { compartilhamentos: increment(1) });
+                    update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { compartilhamentos: increment(1) });
                 });
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                update(ref(db, `videos/${videoId}`), { compartilhamentos: increment(1) });
-                alert("Link copiado!");
             }
         };
 
         window.skipTime = function(s) { videoPlayer.currentTime += s; };
         window.playNext = function() { carregarVideo((currentIndex + 1) % biblioteca.length); };
         window.playPrevious = function() { carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length); };
-
         window.searchVideos = function() {
             const termo = searchInput.value.toLowerCase();
             if (termo.length === 0) { resultsList.style.display = 'none'; return; }
             const filtrados = biblioteca.filter(v => v.titulo.toLowerCase().includes(termo));
-            if (filtrados.length > 0) { renderLista(filtrados); resultsList.style.display = 'block'; }
-            else { resultsList.style.display = 'none'; }
+            renderLista(filtrados);
+            resultsList.style.display = 'block';
+            favoritesPanel.style.display = 'none';
         };
 
         function renderLista(lista) {
             resultsList.innerHTML = '';
-            lista.forEach((video) => {
+            lista.forEach(video => {
                 const realIndex = biblioteca.findIndex(b => b.id_firebase === video.id_firebase);
                 const d = document.createElement('div');
                 d.className = 'video-item'; d.innerText = video.titulo;
