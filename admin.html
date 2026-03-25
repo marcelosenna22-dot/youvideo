@@ -4,87 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Master - YouVideo Smart</title>
+    
+    <link rel="manifest" href="manifest-admin.json">
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; position: relative; }
-        h2 { text-align: center; color: #333; margin-top: 10px; }
+        :root { --primary: #3498db; --danger: #ff4757; --success: #2ecc71; --warning: #f39c12; }
         
-        .btn-logout { 
-            position: absolute; top: 20px; right: 20px; background: #f1f2f6; color: #ff4757; 
-            border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        
+        .container { 
+            background: white; padding: 30px; border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; 
+            max-width: 500px; position: relative; overflow: hidden;
         }
-        .btn-logout:hover { background: #ff4757; color: white; }
 
-        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #666; font-weight: 600; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-        textarea { height: 60px; resize: vertical; }
+        h2 { text-align: center; color: #333; margin-top: 10px; font-weight: 600; }
+        
+        /* BOTÃO SAIR NO TOPO DIREITO */
+        .btn-logout { 
+            position: absolute; top: 20px; right: 20px; background: #f1f2f6; color: var(--danger); 
+            border: none; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; 
+            font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-logout:hover { background: var(--danger); color: white; }
+
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #666; font-weight: 600; }
+        input, textarea { 
+            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; 
+            border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 0.9rem; 
+        }
+        textarea { height: 70px; resize: vertical; }
         
         button { padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; }
-        .btn-save { background-color: #2ecc71; color: white; margin-bottom: 10px; }
-        .btn-update { background-color: #f39c12; color: white; margin-bottom: 10px; display: none; }
+        
+        .btn-save { background-color: var(--success); color: white; margin-bottom: 10px; }
+        .btn-update { background-color: var(--warning); color: white; margin-bottom: 10px; display: none; }
         .btn-cancel { background-color: #bdc3c7; color: white; margin-bottom: 10px; display: none; }
         
-        /* --- LISTA COM SCROLL (ROLAGEM) --- */
-        #listaVideos { 
-            max-height: 300px; /* Define a altura máxima da lista */
-            overflow-y: auto;  /* Ativa a rolagem vertical */
-            padding-right: 5px;
-            margin-top: 10px;
-            border-top: 1px solid #eee;
-        }
+        /* ÁREA DE BUSCA */
+        .search-box { background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 20px 0 10px 0; border: 1px solid #eee; }
+        .search-box input { margin-bottom: 0; padding: 10px; background: white; border: 1px solid #ddd; }
 
-        /* Estilização da barra de rolagem para ficar bonita */
-        #listaVideos::-webkit-scrollbar { width: 6px; }
-        #listaVideos::-webkit-scrollbar-track { background: #f1f1f1; }
-        #listaVideos::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        /* LISTA COM SCROLL */
+        #listaVideos { 
+            max-height: 300px; 
+            overflow-y: auto;  
+            padding-right: 5px;
+            margin-top: 5px;
+        }
+        #listaVideos::-webkit-scrollbar { width: 5px; }
+        #listaVideos::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
 
         .video-item { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px; border-bottom: 1px solid #eee; background: #fff; 
-            margin-bottom: 5px; border-radius: 5px;
+            padding: 12px; border-bottom: 1px solid #eee; background: #fff; 
+            margin-bottom: 8px; border-radius: 8px; border: 1px solid #f8f8f8;
         }
         .info { flex-grow: 1; overflow: hidden; margin-right: 10px; }
-        .info b { display: block; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .info b { display: block; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; }
         .info span { font-size: 0.65rem; color: #999; }
         
         .actions-list { display: flex; gap: 5px; }
-        .btn-edit, .btn-delete { background-color: #f8f9fa; border: 1px solid #ddd; font-size: 0.7rem; padding: 4px 8px; width: auto; }
-        .btn-edit { color: #f39c12; }
-        .btn-delete { color: #ff4757; }
+        .btn-edit, .btn-delete { background-color: #f8f9fa; border: 1px solid #ddd; font-size: 0.7rem; padding: 5px 10px; width: auto; font-weight: 600; }
+        .btn-edit { color: var(--warning); }
+        .btn-delete { color: var(--danger); }
 
         #painelAdmin { display: none; }
-        .status-user { text-align: center; font-size: 0.7rem; color: #999; margin-bottom: 10px; }
+        .status-user { text-align: center; font-size: 0.7rem; color: #999; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div class="container" id="telaLogin">
-        <h2>🔒 Área Restrita</h2>
-        <input type="email" id="emailAdmin" placeholder="E-mail">
+        <h2>🔒 Acesso Restrito</h2>
+        <input type="email" id="emailAdmin" placeholder="E-mail do administrador">
         <input type="password" id="senhaAdmin" placeholder="Senha">
-        <button style="background:#3498db; color:white;" onclick="fazerLogin()">Entrar</button>
+        <button style="background:var(--primary); color:white;" onclick="fazerLogin()">Entrar no Painel</button>
     </div>
 
     <div class="container" id="painelAdmin">
         <button class="btn-logout" onclick="fazerLogout()">Sair</button>
-        <h2>🚀 YouVideo Admin</h2>
+        
+        <h2>🚀 Gestor YouVideo</h2>
         <div id="userEmail" class="status-user"></div>
         
         <input type="hidden" id="editId">
-        <label>Título:</label>
-        <input type="text" id="titulo">
-        <label>Descrição:</label>
-        <textarea id="descricao"></textarea>
-        <label>Caminho:</label>
-        <input type="text" id="caminho">
         
-        <button id="btnSalvar" class="btn-save" onclick="salvarVideo()">💾 Cadastrar</button>
-        <button id="btnAtualizar" class="btn-update" onclick="atualizarVideo()">🔄 Atualizar</button>
-        <button id="btnCancelar" class="btn-cancel" onclick="cancelarEdicao()">Cancelar</button>
+        <label>Título do Vídeo:</label>
+        <input type="text" id="titulo" placeholder="Ex: Clipe Oficial 2024">
+        
+        <label>Descrição Detalhada:</label>
+        <textarea id="descricao" placeholder="Escreva o que aparecerá abaixo do vídeo..."></textarea>
+        
+        <label>Caminho/Link do Arquivo:</label>
+        <input type="text" id="caminho" placeholder="Ex: videos/clipe.mp4">
+        
+        <button id="btnSalvar" class="btn-save" onclick="salvarVideo()">💾 Cadastrar Novo Vídeo</button>
+        <button id="btnAtualizar" class="btn-update" onclick="atualizarVideo()">🔄 Guardar Alterações</button>
+        <button id="btnCancelar" class="btn-cancel" onclick="cancelarEdicao()">Cancelar Edição</button>
 
-        <h4 style="margin: 20px 0 10px 0; color: #333; font-size: 0.9rem;">Vídeos na Nuvem:</h4>
-        <div id="listaVideos">Carregando...</div>
+        <div class="search-box">
+            <label>🔍 Pesquisar na sua lista:</label>
+            <input type="text" id="adminSearch" placeholder="Procure pelo título..." oninput="filtrarLista()">
+        </div>
+
+        <div id="listaVideos">Carregando seus vídeos...</div>
     </div>
 
     <script type="module">
@@ -92,6 +119,7 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // Configuração do seu Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I",
             authDomain: "youvideo-22f8a.firebaseapp.com",
@@ -107,87 +135,130 @@
         const db = getDatabase(app);
         const videosRef = ref(db, 'videos');
 
+        let bibliotecaAdmin = [];
+
+        // --- SISTEMA DE ACESSO ---
         window.fazerLogin = () => {
             const email = document.getElementById('emailAdmin').value;
             const senha = document.getElementById('senhaAdmin').value;
-            signInWithEmailAndPassword(auth, email, senha).catch(() => alert("Erro no login!"));
+            signInWithEmailAndPassword(auth, email, senha).catch(() => alert("Acesso Negado: Verifique os dados."));
         };
 
-        window.fazerLogout = () => signOut(auth).then(() => location.reload());
+        window.fazerLogout = () => {
+            if(confirm("Deseja encerrar a sessão?")) signOut(auth).then(() => location.reload());
+        };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('telaLogin').style.display = 'none';
                 document.getElementById('painelAdmin').style.display = 'block';
-                document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('userEmail').innerText = "Ligado como: " + user.email;
                 carregarLista();
+            } else {
+                document.getElementById('telaLogin').style.display = 'block';
+                document.getElementById('painelAdmin').style.display = 'none';
             }
         });
 
+        // --- GESTÃO DE DADOS ---
         window.salvarVideo = () => {
             const t = document.getElementById('titulo').value;
             const d = document.getElementById('descricao').value;
             const a = document.getElementById('caminho').value;
-            if (t && a) push(videosRef, { titulo: t, descricao: d, arquivo: a, curtidas: 0, compartilhamentos: 0 }).then(() => limpar());
+            if (t && a) {
+                push(videosRef, { titulo: t, descricao: d, arquivo: a, curtidas: 0, compartilhamentos: 0 })
+                .then(() => limparCampos());
+            } else {
+                alert("Título e Caminho são obrigatórios!");
+            }
         };
 
         window.prepararEdicao = (id, t, d, a) => {
             document.getElementById('editId').value = id;
             document.getElementById('titulo').value = t;
-            document.getElementById('descricao').value = d === "undefined" ? "" : d;
+            document.getElementById('descricao').value = (d === "undefined" || d === "null") ? "" : d;
             document.getElementById('caminho').value = a;
+            
             document.getElementById('btnSalvar').style.display = 'none';
             document.getElementById('btnAtualizar').style.display = 'block';
             document.getElementById('btnCancelar').style.display = 'block';
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         window.atualizarVideo = () => {
             const id = document.getElementById('editId').value;
-            update(ref(db, `videos/${id}`), {
+            const dados = {
                 titulo: document.getElementById('titulo').value,
                 descricao: document.getElementById('descricao').value,
                 arquivo: document.getElementById('caminho').value
-            }).then(() => cancelarEdicao());
+            };
+            if (id && dados.titulo && dados.arquivo) {
+                update(ref(db, `videos/${id}`), dados).then(() => cancelarEdicao());
+            }
         };
 
         window.cancelarEdicao = () => {
-            limpar();
+            limparCampos();
             document.getElementById('btnSalvar').style.display = 'block';
             document.getElementById('btnAtualizar').style.display = 'none';
             document.getElementById('btnCancelar').style.display = 'none';
         };
 
-        window.excluirVideo = (id) => { if (confirm("Apagar?")) remove(ref(db, `videos/${id}`)); };
+        window.excluirVideo = (id) => {
+            if (confirm("Tem certeza que deseja apagar este vídeo?")) remove(ref(db, `videos/${id}`));
+        };
 
-        function limpar() {
+        function limparCampos() {
             document.getElementById('titulo').value = "";
             document.getElementById('descricao').value = "";
             document.getElementById('caminho').value = "";
             document.getElementById('editId').value = "";
         }
 
+        // --- LISTAGEM E FILTRO ---
         function carregarLista() {
             onValue(videosRef, (snap) => {
-                const listaDiv = document.getElementById('listaVideos');
-                listaDiv.innerHTML = "";
                 const data = snap.val();
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const v = data[key];
-                        const item = document.createElement('div');
-                        item.className = 'video-item';
-                        const dS = (v.descricao || "").replace(/'/g, "\\'");
-                        const tS = (v.titulo || "").replace(/'/g, "\\'");
-                        item.innerHTML = `<div class="info"><b>${v.titulo}</b><span>${v.arquivo}</span></div>
-                            <div class="actions-list">
-                                <button class="btn-edit" onclick="prepararEdicao('${key}', '${tS}', '${dS}', '${v.arquivo}')">Edit</button>
-                                <button class="btn-delete" onclick="excluirVideo('${key}')">X</button>
-                            </div>`;
-                        listaDiv.appendChild(item);
-                    });
-                }
+                bibliotecaAdmin = data ? Object.keys(data).map(key => ({ id_firebase: key, ...data[key] })) : [];
+                renderizarLista(bibliotecaAdmin);
             });
+        }
+
+        window.filtrarLista = () => {
+            const termo = document.getElementById('adminSearch').value.toLowerCase();
+            const filtrados = bibliotecaAdmin.filter(v => v.titulo.toLowerCase().includes(termo));
+            renderizarLista(filtrados);
+        };
+
+        function renderizarLista(lista) {
+            const listaDiv = document.getElementById('listaVideos');
+            listaDiv.innerHTML = "";
+            if (lista.length === 0) {
+                listaDiv.innerHTML = "<p style='text-align:center; font-size:0.8rem; color:#999;'>Nenhum vídeo encontrado.</p>";
+                return;
+            }
+            lista.forEach(v => {
+                const item = document.createElement('div');
+                item.className = 'video-item';
+                // Proteção contra aspas no texto
+                const dS = (v.descricao || "").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const tS = (v.titulo || "").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                
+                item.innerHTML = `
+                    <div class="info"><b>${v.titulo}</b><span>${v.arquivo}</span></div>
+                    <div class="actions-list">
+                        <button class="btn-edit" onclick="prepararEdicao('${v.id_firebase}', '${tS}', '${dS}', '${v.arquivo}')">Editar</button>
+                        <button class="btn-delete" onclick="excluirVideo('${v.id_firebase}')">Apagar</button>
+                    </div>`;
+                listaDiv.appendChild(item);
+            });
+        }
+
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("PWA Admin Pronto!"))
+                .catch(err => console.log("Erro SW:", err));
         }
     </script>
 </body>
