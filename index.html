@@ -31,11 +31,10 @@
         #searchInput { width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; box-sizing: border-box; outline: none; }
         .results-list { position: absolute; top: 55px; width: 100%; background: #1e1e2e; border-radius: 15px; z-index: 100; display: none; max-height: 300px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .video-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .video-item:hover { background: rgba(255,255,255,0.03); }
 
-        /* --- PLAYER COM CONTROLES --- */
+        /* --- PLAYER PRINCIPAL --- */
         .player-container { width: 100%; background: #000; border-radius: 15px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
-        video { width: 100%; height: 100%; }
+        .main-video { width: 100%; height: 100%; }
         .overlay-controls { position: absolute; top: 0; width: 100%; height: 80%; display: flex; justify-content: center; align-items: center; gap: 20px; opacity: 0; transition: 0.3s; z-index: 10; pointer-events: none; }
         .player-container:hover .overlay-controls { opacity: 1; }
         .btn-overlay { background: rgba(0,0,0,0.6); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; pointer-events: auto; font-size: 1.2rem; }
@@ -44,41 +43,35 @@
         .video-details { margin-top: 15px; background: var(--card); padding: 20px; border-radius: 15px; }
         #playingNow { margin: 0; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
         .actions { display: flex; gap: 10px; margin: 15px 0; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
-        .btn-action { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; transition: 0.2s; }
-        .btn-action:hover { background: rgba(255,255,255,0.15); }
+        .btn-action { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
         .btn-action.active { color: #f39c12; background: rgba(243, 156, 18, 0.15); }
         
         .desc-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .desc-text.expanded { -webkit-line-clamp: unset; }
         .btn-more { background: none; border: none; color: var(--primary); cursor: pointer; font-weight: bold; margin-top: 5px; font-size: 0.8rem; padding: 0; }
 
-        /* --- SEÇÃO DE DESTAQUES (NOVO) --- */
+        /* --- SEÇÃO DE DESTAQUES (MINI PLAYERS) --- */
         .highlights-section { margin-top: 25px; width: 100%; }
-        .highlights-section h4 { margin: 0 0 15px 0; color: #fff; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .highlights-section h4 { margin: 0 0 15px 0; color: #fff; font-size: 1.1rem; }
         
-        .highlights-container { 
-            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;
-            scroll-snap-type: x mandatory;
-        }
-        
-        /* Estilo da barra de rolagem horizontal */
+        .highlights-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; }
         .highlights-container::-webkit-scrollbar { height: 6px; }
         .highlights-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         
         .highlight-card { 
-            flex: 0 0 200px; /* Largura fixa do card */
-            background: var(--card); border-radius: 12px; padding: 15px;
-            scroll-snap-align: start; cursor: pointer; transition: 0.2s;
-            border: 1px solid transparent;
+            flex: 0 0 180px; background: var(--card); border-radius: 12px; 
+            overflow: hidden; cursor: pointer; transition: 0.3s; position: relative;
         }
-        .highlight-card:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.12); }
+        .highlight-card:hover { transform: scale(1.05); background: rgba(255,255,255,0.15); }
         
-        .highlight-card b { 
-            display: block; font-size: 0.85rem; color: #fff;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            margin-bottom: 5px;
-        }
-        .highlight-card span { font-size: 0.75rem; color: #bbb; display: flex; align-items: center; gap: 5px; }
+        /* O segredo do Mini Player */
+        .mini-video-box { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; }
+        .mini-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.3s; }
+        .highlight-card:hover .mini-video { opacity: 1; }
+
+        .card-info { padding: 10px; }
+        .card-info b { display: block; font-size: 0.75rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-info span { font-size: 0.65rem; color: #aaa; }
     </style>
 </head>
 <body>
@@ -96,7 +89,7 @@
     <div id="mainContent">
         <div class="user-header">
             <span id="txtUserEmail">...</span>
-            <button class="btn-logout" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.8rem; text-decoration:underline;" onclick="fazerLogout()">Sair</button>
+            <button class="btn-logout" onclick="fazerLogout()">Sair</button>
         </div>
 
         <div class="search-container">
@@ -105,12 +98,12 @@
         </div>
 
         <div class="player-container">
-            <video id="videoPlayer" controls autoplay playsinline></video>
+            <video id="videoPlayer" class="main-video" controls autoplay playsinline></video>
             <div class="overlay-controls">
-                <button class="btn-overlay" onclick="playPrevious()" title="Anterior">⏮</button>
+                <button class="btn-overlay" onclick="playPrevious()">⏮</button>
                 <button class="btn-overlay" onclick="skipTime(-10)">-10s</button>
                 <button class="btn-overlay" onclick="skipTime(10)">+10s</button>
-                <button class="btn-overlay" onclick="playNext()" title="Próximo">⏭</button>
+                <button class="btn-overlay" onclick="playNext()">⏭</button>
             </div>
         </div>
 
@@ -126,10 +119,8 @@
         </div>
 
         <div class="highlights-section">
-            <h4>🔥 Mais Curtidos</h4>
-            <div class="highlights-container" id="highlightsList">
-                <p style="font-size:0.8rem; color:#888; padding:10px;">Carregando destaques...</p>
-            </div>
+            <h4>🔥 Em Destaque (Passe o mouse)</h4>
+            <div class="highlights-container" id="highlightsList"></div>
         </div>
     </div>
 
@@ -163,16 +154,13 @@
         window.alternarModo = () => {
             isLoginMode = !isLoginMode;
             document.getElementById('authTitle').innerText = isLoginMode ? "YouVideo Login" : "Criar Conta";
-            document.querySelector('.btn-main').innerText = isLoginMode ? "Acessar" : "Cadastrar";
-            document.querySelector('.btn-switch').innerText = isLoginMode ? "Não tem conta? Cadastre-se" : "Já tenho conta. Entrar";
         };
 
         window.executarAuth = () => {
             const email = document.getElementById('emailUser').value;
             const pass = document.getElementById('passUser').value;
-            if(!email || !pass) { alert("Preencha tudo!"); return; }
             if(isLoginMode) signInWithEmailAndPassword(auth, email, pass).catch(() => alert("Erro no login!"));
-            else createUserWithEmailAndPassword(auth, email, pass).then(() => alert("Conta criada!")).catch(() => alert("Erro ao cadastrar!"));
+            else createUserWithEmailAndPassword(auth, email, pass).catch(() => alert("Erro ao cadastrar!"));
         };
 
         window.fazerLogout = () => signOut(auth);
@@ -189,90 +177,77 @@
             }
         });
 
-        // --- BANCO DE DADOS ---
         function conectarBanco() {
             onValue(ref(db, 'videos'), (snap) => {
                 const data = snap.val();
                 if(data) {
                     biblioteca = Object.keys(data).map(key => ({ id_firebase: key, ...data[key] }));
-                    atualizarListaDestaques(); // NOVO
-                    if(currentIndex !== -1) atualizarContadores();
+                    renderHighlights();
                 }
             });
         }
 
-        // --- DESTAQUES (NOVO) ---
-        function atualizarListaDestaques() {
-            const listDiv = document.getElementById('highlightsList');
-            if(biblioteca.length === 0) {
-                listDiv.innerHTML = "<p style='font-size:0.8rem; color:#888; padding:10px;'>Nenhum vídeo disponível.</p>";
-                return;
-            }
-
-            // Ordena a biblioteca por curtidas (do maior para o menor)
-            const maisCurtidos = [...biblioteca].sort((a, b) => (b.curtidas || 0) - (a.curtidas || 0));
+        // --- RENDERIZAR MINI PLAYERS ---
+        function renderHighlights() {
+            const list = document.getElementById('highlightsList');
+            const sorted = [...biblioteca].sort((a,b) => (b.curtidas || 0) - (a.curtidas || 0)).slice(0, 6);
             
-            // Pega os top 5
-            const top5 = maisCurtidos.slice(0, 5);
-
-            listDiv.innerHTML = "";
-            top5.forEach(video => {
-                // Acha o index real na biblioteca original
-                const realIndex = biblioteca.findIndex(v => v.id_firebase === video.id_firebase);
-                
-                const card = document.createElement('div');
-                card.className = 'highlight-card';
-                card.onclick = () => carregarVideo(realIndex);
-                
-                card.innerHTML = `
-                    <b>${video.titulo}</b>
-                    <span>❤️ ${video.curtidas || 0} curtidas</span>
+            list.innerHTML = sorted.map(v => {
+                const idx = biblioteca.indexOf(v);
+                return `
+                    <div class="highlight-card" 
+                         onmouseover="this.querySelector('video').play()" 
+                         onmouseout="this.querySelector('video').pause(); this.querySelector('video').currentTime = 0;"
+                         onclick="carregarVideo(${idx})">
+                        <div class="mini-video-box">
+                            <video class="mini-video" muted loop playsinline>
+                                <source src="${v.arquivo}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="card-info">
+                            <b>${v.titulo}</b>
+                            <span>❤️ ${v.curtidas || 0}</span>
+                        </div>
+                    </div>
                 `;
-                listDiv.appendChild(card);
-            });
+            }).join('');
         }
 
-        // --- PLAYER CONTROLES ---
         window.carregarVideo = (index) => {
-            if(index < 0 || index >= biblioteca.length) return;
             currentIndex = index;
             const v = biblioteca[index];
             videoPlayer.src = v.arquivo;
             videoPlayer.play();
-
             document.getElementById('playingNow').innerText = v.titulo;
-            document.getElementById('videoDesc').innerText = v.descricao || "Sem descrição disponível.";
-            document.getElementById('videoDesc').classList.remove('expanded');
-            
-            document.getElementById('btnLerMais').style.display = (v.descricao && v.descricao.length > 100) ? 'block' : 'none';
-            document.getElementById('resultsList').style.display = 'none';
-            document.getElementById('searchInput').value = '';
-            
-            atualizarContadores();
+            document.getElementById('videoDesc').innerText = v.descricao || "";
+            document.getElementById('likeCount').innerText = v.curtidas || 0;
             verificarFavorito(v.id_firebase);
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe para o player
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
+        // --- CONTROLES AUXILIARES ---
         window.playNext = () => carregarVideo((currentIndex + 1) % biblioteca.length);
         window.playPrevious = () => carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length);
-        window.skipTime = (segundos) => videoPlayer.currentTime += segundos;
-        videoPlayer.onended = () => playNext();
+        window.skipTime = (s) => videoPlayer.currentTime += s;
+        window.searchVideos = () => {
+            const t = document.getElementById('searchInput').value.toLowerCase();
+            const list = document.getElementById('resultsList');
+            if(!t) { list.style.display = 'none'; return; }
+            const fits = biblioteca.filter(v => v.titulo.toLowerCase().includes(t));
+            list.innerHTML = fits.map(v => `<div class="video-item" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}</div>`).join('');
+            list.style.display = fits.length ? 'block' : 'none';
+        };
 
-        // --- BOTÕES DE AÇÃO ---
         window.registrarCurtida = () => {
             if(currentIndex === -1) return;
-            const id = biblioteca[currentIndex].id_firebase;
-            update(ref(db, `videos/${id}`), { curtidas: increment(1) });
+            update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { curtidas: increment(1) });
             document.getElementById('likeIcon').innerText = "❤️";
         };
 
         window.toggleFavorite = () => {
-            if(currentIndex === -1) return;
             const id = biblioteca[currentIndex].id_firebase;
-            const pos = meusFavoritos.indexOf(id);
-            if(pos > -1) meusFavoritos.splice(pos, 1);
-            else meusFavoritos.push(id);
-            
+            const p = meusFavoritos.indexOf(id);
+            if(p > -1) meusFavoritos.splice(p, 1); else meusFavoritos.push(id);
             localStorage.setItem('favs_user', JSON.stringify(meusFavoritos));
             verificarFavorito(id);
         };
@@ -283,32 +258,7 @@
             document.getElementById('favBtn').classList.toggle('active', isFav);
         }
 
-        window.compartilhar = () => {
-            if(currentIndex === -1) return;
-            const v = biblioteca[currentIndex];
-            if(navigator.share) {
-                navigator.share({ title: v.titulo, text: 'Veja esse vídeo no YouVideo Smart!', url: window.location.href })
-                .then(() => update(ref(db, `videos/${v.id_firebase}`), { compartilhamentos: increment(1) }));
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Link copiado!");
-            }
-        };
-
-        function atualizarContadores() {
-            const v = biblioteca[currentIndex];
-            document.getElementById('likeCount').innerText = v.curtidas || 0;
-        }
-
-        window.searchVideos = () => {
-            const t = document.getElementById('searchInput').value.toLowerCase();
-            const list = document.getElementById('resultsList');
-            if(!t) { list.style.display = 'none'; return; }
-            const fits = biblioteca.filter(v => v.titulo.toLowerCase().includes(t));
-            list.innerHTML = fits.map(v => `<div class="video-item" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}</div>`).join('');
-            list.style.display = fits.length ? 'block' : 'none';
-        };
-
+        window.compartilhar = () => navigator.share ? navigator.share({url: window.location.href}) : alert("Link copiado!");
         window.toggleDesc = () => {
             const d = document.getElementById('videoDesc');
             d.classList.toggle('expanded');
