@@ -20,83 +20,77 @@
             background: #0f0c29; display: flex; justify-content: center; align-items: center;
             z-index: 9999; transition: opacity 0.8s ease;
         }
-        .splash-text { font-size: 2.8rem; font-weight: 700; color: #fff; animation: glow-text 2s ease-in-out infinite alternate; }
+        .splash-text { font-size: 2.5rem; font-weight: 700; color: #fff; animation: glow 2s infinite alternate; }
         .splash-text span { color: var(--primary); }
-        @keyframes glow-text { from { text-shadow: 0 0 10px rgba(255,255,255,0.2); transform: scale(0.95); } to { text-shadow: 0 0 30px var(--primary); transform: scale(1); } }
+        @keyframes glow { from { text-shadow: 0 0 10px var(--primary); } to { text-shadow: 0 0 30px var(--primary); } }
 
-        /* --- ESTILOS GERAIS --- */
+        /* --- LAYOUT --- */
         body {
             font-family: 'Poppins', sans-serif; background: var(--bg-gradient);
-            background-attachment: fixed; color: var(--text); margin: 0; padding: 20px;
+            color: var(--text); margin: 0; padding: 15px;
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        .search-container { width: 100%; max-width: 600px; position: relative; margin-bottom: 25px; display: flex; gap: 10px; }
+        .search-container { width: 100%; max-width: 600px; position: relative; margin-bottom: 20px; display: flex; gap: 10px; }
         input { 
-            flex-grow: 1; padding: 14px 25px; border-radius: 50px;
+            flex-grow: 1; padding: 12px 20px; border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.1); background: var(--card);
             backdrop-filter: blur(10px); color: white; outline: none;
         }
-
-        .btn-fav-toggle {
-            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-            color: white; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.2rem;
-        }
+        .btn-fav-toggle { background: var(--card); border: none; color: gold; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 1.2rem; }
 
         /* --- PLAYER --- */
         .player-container {
             width: 100%; max-width: 850px; background: #000;
-            border-radius: 20px; overflow: hidden; position: relative;
-            aspect-ratio: 16 / 9; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            border-radius: 15px; overflow: hidden; position: relative;
+            aspect-ratio: 16 / 9; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .player-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1e1e3f 0%, #000 100%); z-index: 1; }
-        .wave { width: 5px; height: 30px; background: var(--primary); margin: 0 3px; border-radius: 10px; animation: wave-anim 1s linear infinite; }
-        @keyframes wave-anim { 0%, 100% { height: 10px; } 50% { height: 50px; } }
-        video { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 2; display: none; }
+        .player-placeholder { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #111; z-index: 1; }
+        .wave { width: 4px; height: 20px; background: var(--primary); margin: 0 2px; border-radius: 5px; animation: wave 1s infinite; }
+        @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 40px; } }
+        
+        video { width: 100%; height: 100%; object-fit: contain; display: none; position: relative; z-index: 2; }
         video.active { display: block; }
 
-        .overlay-controls { position: absolute; top: 0; left: 0; width: 100%; height: 75%; display: flex; justify-content: center; align-items: center; gap: 20px; opacity: 0; transition: 0.3s; background: rgba(0,0,0,0.2); z-index: 10; pointer-events: none; }
+        .overlay-controls { position: absolute; top: 0; width: 100%; height: 75%; display: flex; justify-content: center; align-items: center; gap: 15px; opacity: 0; transition: 0.3s; z-index: 10; pointer-events: none; }
         .player-container:hover .overlay-controls { opacity: 1; }
-        .btn-overlay { background: rgba(0,0,0,0.7); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; width: 60px; height: 60px; font-size: 1.2rem; pointer-events: auto; }
+        .btn-overlay { background: rgba(0,0,0,0.6); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; pointer-events: auto; }
 
-        /* --- INFO & ACTIONS --- */
-        .video-info { width: 100%; max-width: 850px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .actions { display: flex; gap: 10px; }
-        .btn-action { background: var(--card); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .btn-action.active { border-color: gold; color: gold; }
-
-        /* --- LISTAS (BUSCA E FAVORITOS) --- */
-        .results-list, .favorites-panel { 
-            position: absolute; top: 60px; left: 0; width: 100%; 
-            background: #1e1e2e; border-radius: 15px; z-index: 100; 
-            max-height: 300px; overflow-y: auto; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        /* --- INFO BOX (Título e Descrição) --- */
+        .video-details { width: 100%; max-width: 850px; margin-top: 15px; background: var(--card); padding: 20px; border-radius: 15px; box-sizing: border-box; }
+        
+        #playingNow { 
+            margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            font-size: 1.3rem; font-weight: 600;
         }
-        .video-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
-        .video-item:hover { background: rgba(255,255,255,0.05); }
+
+        .actions { display: flex; gap: 15px; margin: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .btn-action { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .btn-action.active { color: gold; background: rgba(255, 215, 0, 0.1); }
+
+        .desc-text { font-size: 0.95rem; color: #ccc; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .desc-text.expanded { -webkit-line-clamp: unset; }
+        .btn-more { background: none; border: none; color: var(--primary); cursor: pointer; font-weight: 600; padding: 5px 0; font-size: 0.85rem; }
+
+        /* --- LISTAS --- */
+        .results-list, .favorites-panel { position: absolute; top: 60px; width: 100%; background: #1e1e2e; border-radius: 10px; z-index: 100; max-height: 300px; overflow-y: auto; display: none; box-shadow: 0 10px 30px #000; }
+        .video-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <div class="splash-text">YouVideo <span>Smart</span></div>
-    </div>
-
-    <header><h1>YouVideo Smart</h1></header>
+    <div id="splash"><div class="splash-text">YouVideo <span>Smart</span></div></div>
 
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Pesquisar vídeos..." oninput="searchVideos()" autocomplete="off">
-        <button class="btn-fav-toggle" onclick="toggleFavoritesPanel()" title="Meus Favoritos">⭐</button>
+        <input type="text" id="searchInput" placeholder="Buscar vídeos..." oninput="searchVideos()">
+        <button class="btn-fav-toggle" onclick="toggleFavoritesPanel()">⭐</button>
         <div class="results-list" id="resultsList"></div>
         <div class="favorites-panel" id="favoritesPanel"></div>
     </div>
 
     <div class="player-container">
-        <div class="player-placeholder" id="placeholder">
-            <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
-        </div>
-        <video id="videoPlayer" controls autoplay playsinline controlslist="nodownload">
-            <source src="" type="video/mp4">
-        </video>
+        <div class="player-placeholder" id="placeholder"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+        <video id="videoPlayer" controls autoplay playsinline controlslist="nodownload"><source src="" type="video/mp4"></video>
         <div class="overlay-controls">
             <button class="btn-overlay" onclick="playPrevious()">⏮</button>
             <button class="btn-overlay" onclick="skipTime(-10)">-10s</button>
@@ -105,19 +99,17 @@
         </div>
     </div>
 
-    <div class="video-info">
-        <h3 id="playingNow">Pronto para começar!</h3>
+    <div class="video-details">
+        <h3 id="playingNow">Bem-vindo ao YouVideo Smart</h3>
+        
         <div class="actions">
-            <button class="btn-action" id="favBtn" onclick="toggleFavorite()">
-                <span id="favIcon">☆</span>
-            </button>
-            <button class="btn-action" id="likeBtn" onclick="registrarCurtida()">
-                <span id="likeIcon">🤍</span> <b id="likeCount">0</b>
-            </button>
-            <button class="btn-action" onclick="registrarCompartilhamento()">
-                <span>🔗</span> <b id="shareCount">0</b>
-            </button>
+            <button class="btn-action" id="favBtn" onclick="toggleFavorite()"><span id="favIcon">☆</span> Salvar</button>
+            <button class="btn-action" id="likeBtn" onclick="registrarCurtida()"><span id="likeIcon">🤍</span> <b id="likeCount">0</b></button>
+            <button class="btn-action" onclick="registrarCompartilhamento()"><span>🔗</span> <b id="shareCount">0</b></button>
         </div>
+
+        <p class="desc-text" id="videoDesc">Escolha um vídeo na busca para começar a assistir.</p>
+        <button class="btn-more" id="btnLerMais" onclick="toggleDesc()" style="display:none;">... mais</button>
     </div>
 
     <script type="module">
@@ -138,34 +130,26 @@
         const db = getDatabase(app);
         const videosRef = ref(db, 'videos');
 
-        const videoPlayer = document.getElementById('videoPlayer');
-        const placeholder = document.getElementById('placeholder');
-        const resultsList = document.getElementById('resultsList');
-        const favoritesPanel = document.getElementById('favoritesPanel');
-        const searchInput = document.getElementById('searchInput');
-
         let biblioteca = [];
         let currentIndex = -1;
-        let meusFavoritos = JSON.parse(localStorage.getItem('favs_youvideo')) || [];
+        let meusFavoritos = JSON.parse(localStorage.getItem('favs_uvs')) || [];
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splash').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash').style.display = 'none', 800);
-            }, 3000);
-        });
+        const videoPlayer = document.getElementById('videoPlayer');
+        const placeholder = document.getElementById('placeholder');
 
+        // Splash Screen
+        window.onload = () => setTimeout(() => {
+            const s = document.getElementById('splash');
+            s.style.opacity = '0';
+            setTimeout(() => s.style.display = 'none', 800);
+        }, 2500);
+
+        // Firebase Sync
         onValue(videosRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 biblioteca = Object.keys(data).map(key => ({ id_firebase: key, ...data[key] }));
-                if (currentIndex !== -1) {
-                    const v = biblioteca.find(item => item.id_firebase === biblioteca[currentIndex].id_firebase);
-                    if (v) {
-                        document.getElementById('likeCount').innerText = v.curtidas || 0;
-                        document.getElementById('shareCount').innerText = v.compartilhamentos || 0;
-                    }
-                }
+                if (currentIndex !== -1) atualizarContadores();
             }
         });
 
@@ -173,39 +157,45 @@
             if (index < 0 || index >= biblioteca.length) return;
             currentIndex = index;
             const video = biblioteca[index];
+            
             placeholder.style.display = 'none';
             videoPlayer.classList.add('active');
             videoPlayer.src = video.arquivo;
             videoPlayer.load();
             videoPlayer.play().catch(() => { videoPlayer.muted = true; videoPlayer.play(); });
-            
+
             document.getElementById('playingNow').innerText = video.titulo;
-            document.getElementById('likeCount').innerText = video.curtidas || 0;
-            document.getElementById('shareCount').innerText = video.compartilhamentos || 0;
-            document.getElementById('likeIcon').innerText = "🤍";
+            document.getElementById('videoDesc').innerText = video.descricao || "Sem descrição.";
+            document.getElementById('videoDesc').classList.remove('expanded');
             
-            // Atualiza ícone de favorito
+            // Botão Ler Mais
+            const btnMore = document.getElementById('btnLerMais');
+            btnMore.style.display = video.descricao && video.descricao.length > 90 ? 'block' : 'none';
+            btnMore.innerText = "... mais";
+
+            atualizarContadores();
             checkFavoriteStatus(video.id_firebase);
             
-            resultsList.style.display = 'none';
-            favoritesPanel.style.display = 'none';
-            searchInput.value = '';
+            document.getElementById('resultsList').style.display = 'none';
+            document.getElementById('favoritesPanel').style.display = 'none';
+            document.getElementById('searchInput').value = '';
         };
 
-        // --- LÓGICA DE FAVORITOS ---
+        window.toggleDesc = function() {
+            const d = document.getElementById('videoDesc');
+            const b = document.getElementById('btnLerMais');
+            d.classList.toggle('expanded');
+            b.innerText = d.classList.contains('expanded') ? "recolher" : "... mais";
+        };
+
         window.toggleFavorite = function() {
             if (currentIndex === -1) return;
-            const videoId = biblioteca[currentIndex].id_firebase;
-            const idx = meusFavoritos.indexOf(videoId);
-            
-            if (idx > -1) {
-                meusFavoritos.splice(idx, 1);
-            } else {
-                meusFavoritos.push(videoId);
-            }
-            
-            localStorage.setItem('favs_youvideo', JSON.stringify(meusFavoritos));
-            checkFavoriteStatus(videoId);
+            const id = biblioteca[currentIndex].id_firebase;
+            const pos = meusFavoritos.indexOf(id);
+            if (pos > -1) meusFavoritos.splice(pos, 1);
+            else meusFavoritos.push(id);
+            localStorage.setItem('favs_uvs', JSON.stringify(meusFavoritos));
+            checkFavoriteStatus(id);
         };
 
         function checkFavoriteStatus(id) {
@@ -214,75 +204,41 @@
             document.getElementById('favBtn').classList.toggle('active', isFav);
         }
 
-        window.toggleFavoritesPanel = function() {
-            if (favoritesPanel.style.display === 'block') {
-                favoritesPanel.style.display = 'none';
-            } else {
-                renderFavorites();
-                favoritesPanel.style.display = 'block';
-                resultsList.style.display = 'none';
-            }
-        };
-
-        function renderFavorites() {
-            favoritesPanel.innerHTML = '<h4 style="padding:15px;margin:0;color:gold;">⭐ Meus Favoritos</h4>';
-            const favsData = biblioteca.filter(v => meusFavoritos.includes(v.id_firebase));
-            
-            if (favsData.length === 0) {
-                favoritesPanel.innerHTML += '<p style="padding:15px;color:#888;">Nenhum favorito ainda.</p>';
-                return;
-            }
-
-            favsData.forEach(video => {
-                const realIndex = biblioteca.findIndex(b => b.id_firebase === video.id_firebase);
-                const d = document.createElement('div');
-                d.className = 'video-item';
-                d.innerHTML = `<span>${video.titulo}</span> <span>▶️</span>`;
-                d.onclick = () => carregarVideo(realIndex);
-                favoritesPanel.appendChild(d);
-            });
-        }
-
-        // --- OUTRAS FUNÇÕES ---
         window.registrarCurtida = function() {
             if (currentIndex === -1) return;
             update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { curtidas: increment(1) });
             document.getElementById('likeIcon').innerText = "❤️";
         };
 
-        window.registrarCompartilhamento = function() {
-            if (currentIndex === -1) return;
-            if (navigator.share) {
-                navigator.share({ title: 'YouVideo Smart', url: window.location.href }).then(() => {
-                    update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { compartilhamentos: increment(1) });
-                });
-            }
-        };
-
-        window.skipTime = function(s) { videoPlayer.currentTime += s; };
-        window.playNext = function() { carregarVideo((currentIndex + 1) % biblioteca.length); };
-        window.playPrevious = function() { carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length); };
-        window.searchVideos = function() {
-            const termo = searchInput.value.toLowerCase();
-            if (termo.length === 0) { resultsList.style.display = 'none'; return; }
-            const filtrados = biblioteca.filter(v => v.titulo.toLowerCase().includes(termo));
-            renderLista(filtrados);
-            resultsList.style.display = 'block';
-            favoritesPanel.style.display = 'none';
-        };
-
-        function renderLista(lista) {
-            resultsList.innerHTML = '';
-            lista.forEach(video => {
-                const realIndex = biblioteca.findIndex(b => b.id_firebase === video.id_firebase);
-                const d = document.createElement('div');
-                d.className = 'video-item'; d.innerText = video.titulo;
-                d.onclick = () => carregarVideo(realIndex);
-                resultsList.appendChild(d);
-            });
+        function atualizarContadores() {
+            const v = biblioteca[currentIndex];
+            document.getElementById('likeCount').innerText = v.curtidas || 0;
+            document.getElementById('shareCount').innerText = v.compartilhamentos || 0;
         }
 
-        videoPlayer.onended = () => playNext();
+        window.searchVideos = function() {
+            const t = document.getElementById('searchInput').value.toLowerCase();
+            const list = document.getElementById('resultsList');
+            if (!t) { list.style.display = 'none'; return; }
+            const fits = biblioteca.filter(v => v.titulo.toLowerCase().includes(t));
+            list.innerHTML = fits.map(v => `<div class="video-item" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}<span>▶️</span></div>`).join('');
+            list.style.display = fits.length ? 'block' : 'none';
+        };
+
+        window.toggleFavoritesPanel = function() {
+            const p = document.getElementById('favoritesPanel');
+            if (p.style.display === 'block') { p.style.display = 'none'; return; }
+            const favs = biblioteca.filter(v => meusFavoritos.includes(v.id_firebase));
+            p.innerHTML = '<h4 style="padding:15px; margin:0; color:gold;">⭐ Meus Favoritos</h4>' + 
+                (favs.length ? favs.map(v => `<div class="video-item" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}<span>▶️</span></div>`).join('') : '<p style="padding:15px; color:#888;">Vazio</p>');
+            p.style.display = 'block';
+            document.getElementById('resultsList').style.display = 'none';
+        };
+
+        window.skipTime = (s) => videoPlayer.currentTime += s;
+        window.playNext = () => carregarVideo((currentIndex + 1) % biblioteca.length);
+        window.playPrevious = () => carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length);
+        videoPlayer.onended = () => window.playNext();
     </script>
 </body>
 </html>
