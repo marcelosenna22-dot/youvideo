@@ -14,10 +14,28 @@
             --text: #ffffff; 
         }
 
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-gradient); color: var(--text); margin: 0; padding: 15px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-gradient); color: var(--text); margin: 0; padding: 15px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow-x: hidden; }
+
+        /* --- TELA DE ABERTURA (SPLASH) --- */
+        #splashScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-gradient);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 20000; transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        .splash-logo {
+            font-size: 2.5rem; font-weight: 600; color: white;
+            text-shadow: 0 0 20px rgba(255, 71, 87, 0.6);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
 
         /* --- TELA DE LOGIN --- */
-        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
         .auth-container { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
         .auth-container input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: white; box-sizing: border-box; outline: none; }
         .btn-main { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: white; }
@@ -60,6 +78,11 @@
 </head>
 <body onclick="fecharSugestoes(event)">
 
+    <div id="splashScreen">
+        <div class="splash-logo">YouDiana Smart</div>
+        <p style="font-size: 0.8rem; margin-top: 20px; opacity: 0.6;">Carregando sua experiência...</p>
+    </div>
+
     <div id="authScreen">
         <div class="auth-container">
             <h2 id="authTitle">YouDiana Login</h2>
@@ -87,15 +110,15 @@
             <video id="videoPlayer" class="main-video" controls autoplay playsinline></video>
             
             <div class="overlay-controls">
-                <button class="btn-overlay" onclick="playPrevious()" title="Anterior">⏮</button>
-                <button class="btn-overlay btn-small" onclick="skipTime(-10)" title="Voltar 10s">-10s</button>
-                <button class="btn-overlay btn-small" onclick="skipTime(10)" title="Avançar 10s">+10s</button>
-                <button class="btn-overlay" onclick="playNext()" title="Próximo">⏭</button>
+                <button class="btn-overlay" onclick="playPrevious()">⏮</button>
+                <button class="btn-overlay btn-small" onclick="skipTime(-10)">-10s</button>
+                <button class="btn-overlay btn-small" onclick="skipTime(10)">+10s</button>
+                <button class="btn-overlay" onclick="playNext()">⏭</button>
             </div>
         </div>
 
         <div class="video-details" style="margin-top:15px; background:var(--card); padding:15px; border-radius:10px;">
-            <h3 id="playingNow" style="margin:0;">Carregando...</h3>
+            <h3 id="playingNow" style="margin:0;">Iniciando...</h3>
             <p id="videoDesc" style="font-size:0.85rem; color:#bbb; margin-top:5px;"></p>
             <div style="display:flex; gap:15px; margin-top:10px;">
                 <button onclick="registrarCurtida()" style="background:none; border:none; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;">❤️ <span id="likeCount">0</span></button>
@@ -135,6 +158,18 @@
 
         const videoPlayer = document.getElementById('videoPlayer');
         const loader = document.getElementById('videoLoader');
+
+        // LÓGICA DA TELA DE SPLASH
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                    // Após o splash, o Firebase vai decidir se mostra Login ou App através do onAuthStateChanged
+                }, 800);
+            }, 3000); // Fica na tela por 3 segundos
+        });
 
         videoPlayer.onwaiting = () => loader.style.display = 'block';
         videoPlayer.onplaying = () => loader.style.display = 'none';
@@ -203,11 +238,7 @@
 
         window.playNext = () => carregarVideo((currentIndex + 1) % biblioteca.length);
         window.playPrevious = () => carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length);
-        
-        // Função para pular tempo
-        window.skipTime = (segundos) => {
-            videoPlayer.currentTime += segundos;
-        };
+        window.skipTime = (segundos) => videoPlayer.currentTime += segundos;
 
         function renderHighlights() {
             const list = document.getElementById('highlightsList');
