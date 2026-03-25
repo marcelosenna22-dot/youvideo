@@ -46,9 +46,10 @@
         .app-logo { font-size: 1.4rem; font-weight: 600; color: white; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); margin-bottom: 15px; align-self: flex-start; }
         .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.75rem; opacity: 0.7; }
         
-        /* BUSCA */
+        /* BUSCA COM LUPINHA */
         .search-container { position: relative; width: 100%; margin-bottom: 20px; }
-        #searchInput { width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; box-sizing: border-box; outline: none; }
+        #searchInput { width: 100%; padding: 12px 20px 12px 45px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; box-sizing: border-box; outline: none; }
+        .search-icon-fixed { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; pointer-events: none; }
         .results-list { position: absolute; top: 55px; width: 100%; background: #1e1e2e; border-radius: 15px; z-index: 100; display: none; max-height: 200px; overflow-y: auto; }
         .video-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
 
@@ -59,20 +60,23 @@
         .overlay-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; opacity: 0; transition: 0.3s; z-index: 10; pointer-events: none; }
         .player-container:hover .overlay-controls { opacity: 1; }
         .btn-overlay { background: rgba(0,0,0,0.6); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; pointer-events: auto; font-size: 1.1rem; min-width: 50px; }
-        .btn-small { font-size: 0.8rem; min-width: 40px; }
 
         .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* COMENTÁRIOS */
-        .comments-section { margin-top: 20px; background: var(--card); padding: 15px; border-radius: 15px; }
+        /* COMENTÁRIOS EXPANSÍVEIS */
+        .comments-section { margin-top: 15px; background: var(--card); border-radius: 15px; overflow: hidden; transition: 0.3s; }
+        .comments-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: rgba(255,255,255,0.03); }
+        .comments-header:hover { background: rgba(255,255,255,0.06); }
+        #commentsBody { display: none; padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        
         .comment-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .comment-input-group input { flex: 1; padding: 10px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; }
+        .comment-input-group input { flex: 1; padding: 10px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 0.85rem; }
         .comment-list { max-height: 250px; overflow-y: auto; font-size: 0.9rem; }
-        .comment-item { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .comment-user { color: var(--primary); font-weight: 600; font-size: 0.75rem; display: block; }
+        .comment-item { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .comment-user { color: var(--primary); font-weight: 600; font-size: 0.75rem; display: block; margin-bottom: 2px; }
 
-        /* DESTAQUES */
+        /* RECOMENDADOS */
         .highlights-section { margin-top: 25px; width: 100%; }
         .highlights-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
         .highlight-card { flex: 0 0 140px; background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; }
@@ -109,6 +113,7 @@
         </div>
 
         <div class="search-container" onclick="event.stopPropagation()">
+            <span class="search-icon-fixed">🔍</span>
             <input type="text" id="searchInput" placeholder="Pesquisar..." oninput="searchVideos()">
             <div class="results-list" id="resultsList"></div>
         </div>
@@ -118,8 +123,8 @@
             <video id="videoPlayer" class="main-video" controls autoplay playsinline></video>
             <div class="overlay-controls">
                 <button class="btn-overlay" onclick="playPrevious()">⏮</button>
-                <button class="btn-overlay btn-small" onclick="skipTime(-10)">-10s</button>
-                <button class="btn-overlay btn-small" onclick="skipTime(10)">+10s</button>
+                <button class="btn-overlay" style="font-size: 0.8rem;" onclick="skipTime(-10)">-10s</button>
+                <button class="btn-overlay" style="font-size: 0.8rem;" onclick="skipTime(10)">+10s</button>
                 <button class="btn-overlay" onclick="playNext()">⏭</button>
             </div>
         </div>
@@ -133,12 +138,17 @@
         </div>
 
         <div class="comments-section">
-            <h4 style="margin:0 0 10px 0; font-size: 1rem;">Comentários</h4>
-            <div class="comment-input-group">
-                <input type="text" id="newComment" placeholder="Escreva algo...">
-                <button class="btn-main" style="width: auto; padding: 0 15px;" onclick="enviarComentario()">Postar</button>
+            <div class="comments-header" onclick="toggleComments()">
+                <span style="font-weight: 600; font-size: 0.9rem;">Comentários (<span id="commentCount">0</span>)</span>
+                <span id="commentArrow">▼</span>
             </div>
-            <div class="comment-list" id="commentList"></div>
+            <div id="commentsBody">
+                <div class="comment-input-group">
+                    <input type="text" id="newComment" placeholder="Escreva algo...">
+                    <button class="btn-main" style="width: auto; padding: 0 15px;" onclick="enviarComentario()">Postar</button>
+                </div>
+                <div class="comment-list" id="commentList"></div>
+            </div>
         </div>
 
         <div class="highlights-section">
@@ -171,7 +181,19 @@
         let isLoginMode = true;
         let userAtual = null;
 
-        // SPLASH
+        // --- INTERFACE ---
+        window.toggleComments = () => {
+            const body = document.getElementById('commentsBody');
+            const arrow = document.getElementById('commentArrow');
+            if(body.style.display === 'block') {
+                body.style.display = 'none';
+                arrow.innerText = '▼';
+            } else {
+                body.style.display = 'block';
+                arrow.innerText = '▲';
+            }
+        };
+
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('splashScreen').style.opacity = '0';
@@ -179,7 +201,7 @@
             }, 3000);
         });
 
-        // AUTH
+        // --- AUTH ---
         window.alternarModo = () => {
             isLoginMode = !isLoginMode;
             document.getElementById('authTitle').innerText = isLoginMode ? "YouDiana Login" : "Criar Conta";
@@ -218,11 +240,12 @@
                 conectarBanco();
             } else {
                 document.getElementById('authScreen').style.display = 'flex';
+                document.getElementById('mainContent').style.none = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
             }
         });
 
-        // BANCO E PLAYER
+        // --- BANCO E PLAYER ---
         function conectarBanco() {
             onValue(ref(db, 'videos'), (snap) => {
                 const data = snap.val();
@@ -243,23 +266,32 @@
             document.getElementById('playingNow').innerText = v.titulo;
             document.getElementById('likeCount').innerText = v.curtidas || 0;
             carregarComentarios(v.id_firebase);
+            // Ao trocar de vídeo, fecha os comentários para economizar espaço
+            document.getElementById('commentsBody').style.display = 'none';
+            document.getElementById('commentArrow').innerText = '▼';
         };
 
         window.skipTime = (s) => document.getElementById('videoPlayer').currentTime += s;
         window.playNext = () => carregarVideo((currentIndex + 1) % biblioteca.length);
         window.playPrevious = () => carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length);
 
-        // COMENTÁRIOS
+        // --- COMENTÁRIOS ---
         function carregarComentarios(videoId) {
             onValue(ref(db, `comentarios/${videoId}`), (snap) => {
                 const list = document.getElementById('commentList');
+                const countText = document.getElementById('commentCount');
                 list.innerHTML = "";
                 const data = snap.val();
                 if(data) {
-                    Object.values(data).reverse().forEach(c => {
+                    const entries = Object.values(data);
+                    countText.innerText = entries.length;
+                    entries.reverse().forEach(c => {
                         list.innerHTML += `<div class="comment-item"><span class="comment-user">${c.usuario}</span><span>${c.texto}</span></div>`;
                     });
-                } else { list.innerHTML = "<p style='opacity:0.4'>Sem comentários.</p>"; }
+                } else { 
+                    countText.innerText = "0";
+                    list.innerHTML = "<p style='opacity:0.4; font-size:0.8rem;'>Sem comentários.</p>"; 
+                }
             });
         }
 
@@ -293,9 +325,10 @@
         window.compartilhar = () => navigator.share ? navigator.share({url: window.location.href}) : alert("Link copiado!");
 
         const loader = document.getElementById('videoLoader');
-        videoPlayer.onwaiting = () => loader.style.display = 'block';
-        videoPlayer.onplaying = () => loader.style.display = 'none';
-        videoPlayer.onended = () => playNext();
+        const vp = document.getElementById('videoPlayer');
+        vp.onwaiting = () => loader.style.display = 'block';
+        vp.onplaying = () => loader.style.display = 'none';
+        vp.onended = () => playNext();
     </script>
 </body>
 </html>
