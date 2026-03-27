@@ -16,17 +16,10 @@
 
         body { font-family: 'Poppins', sans-serif; background: var(--bg-gradient); color: var(--text); margin: 0; padding: 10px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow-x: hidden; }
 
-        /* --- SPLASH --- */
-        #splashScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-gradient);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 20000; transition: opacity 0.8s ease, visibility 0.8s;
-        }
+        /* --- SPLASH & AUTH (Mantidos iguais) --- */
+        #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; transition: opacity 0.8s ease, visibility 0.8s; }
         .splash-logo { font-size: 2.5rem; font-weight: 600; color: white; text-shadow: 0 0 20px rgba(255, 71, 87, 0.6); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
-
-        /* --- AUTH --- */
         #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
         .auth-container { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
         .auth-container input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: white; box-sizing: border-box; outline: none; }
@@ -42,19 +35,35 @@
         .search-container { position: relative; width: 100%; margin-bottom: 20px; }
         #searchInput { width: 100%; padding: 12px 20px 12px 45px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; box-sizing: border-box; outline: none; }
         .search-icon-fixed { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; }
-        .results-list { position: absolute; top: 45px; width: 100%; background: black; opacity: 1; border-radius: 15px; z-index: 100; display: flex; flex-direction: column; max-height: 200px; overflow-y: auto; }
+        .results-list { position: absolute; top: 45px; width: 100%; background: black; border-radius: 15px; z-index: 100; display: flex; flex-direction: column; max-height: 200px; overflow-y: auto; }
         .video-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; color: white; }
 
-        /* PLAYER */
-        .player-container { width: 100%; background: #000; border-radius: 15px; overflow: hidden; position: relative; max-height: 75vh; display: flex; justify-content: center; align-items: center; }
+        /* PLAYER COM AUTO-HIDE CONTROLS */
+        .player-container { width: 100%; background: #000; border-radius: 15px; overflow: hidden; position: relative; max-height: 75vh; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .main-video { max-width: 100%; max-height: 75vh; display: block; }
-        .overlay-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; opacity: 0; transition: 0.3s; z-index: 10; pointer-events: none; }
-        .player-container:hover .overlay-controls { opacity: 1; }
-        .btn-overlay { background: rgba(0,0,0,0.6); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; pointer-events: auto; font-size: 1.1rem; min-width: 50px; }
+        
+        .overlay-controls { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; justify-content: center; align-items: center; gap: 15px; 
+            background: rgba(0,0,0,0.4);
+            opacity: 0; transition: opacity 0.4s ease; z-index: 10; pointer-events: none; 
+        }
+        /* Classe ativa para mostrar controles */
+        .overlay-controls.active { opacity: 1; pointer-events: auto; }
+
+        .btn-overlay { background: rgba(0,0,0,0.6); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; min-width: 50px; }
         .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* COMENTÁRIOS */
+        /* DESCRIÇÃO EXPANSÍVEL */
+        .video-details { margin-top:12px; background:var(--card); padding:15px; border-radius:15px; }
+        #videoDesc { 
+            font-size: 0.85rem; color: #bbb; margin-top: 8px; line-height: 1.4; 
+            cursor: pointer; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
+        }
+        #videoDesc.expanded { -webkit-line-clamp: unset; display: block; color: #fff; }
+
+        /* COMENTÁRIOS & LISTAS (Mantidos) */
         .comments-section { margin-top: 10px; background: var(--card); border-radius: 15px; overflow: hidden; }
         .comments-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         #commentsBody { display: none; padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
@@ -63,11 +72,8 @@
         .comment-list { max-height: 200px; overflow-y: auto; font-size: 0.85rem; }
         .comment-item { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .comment-user { color: var(--primary); font-weight: 600; font-size: 0.75rem; display: block; }
-
-        /* LISTAS */
         .section-title { margin: 25px 0 10px 0; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .scroll-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; width: 100%; }
-        .scroll-container::-webkit-scrollbar { display: none; }
         .video-card { flex: 0 0 150px; background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer; }
         .thumb-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; }
         .thumb-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
@@ -76,26 +82,11 @@
 </head>
 <body onclick="document.getElementById('resultsList').style.display='none'">
 
-    <div id="splashScreen">
-        <div class="splash-logo">YouDiana Smart</div>
-        <p style="opacity: 0.5; font-size: 0.8rem; margin-top: 10px;">Carregando...</p>
-    </div>
-
-    <div id="authScreen">
-        <div class="auth-container">
-            <h2 id="authTitle">YouDiana Login</h2>
-            <input type="email" id="emailUser" placeholder="E-mail">
-            <input type="password" id="passUser" placeholder="Senha">
-            <button class="btn-main" id="btnAuthAction" onclick="executarAuth()">Acessar</button>
-            <div style="margin-top: 15px;">
-                <button class="btn-switch" onclick="alternarModo()" id="btnSwitchLabel">Criar nova conta</button>
-            </div>
-        </div>
-    </div>
+    <div id="splashScreen"><div class="splash-logo">YouDiana Smart</div><p style="opacity:0.5; font-size:0.8rem; margin-top:10px;">Carregando...</p></div>
+    <div id="authScreen"><div class="auth-container"><h2 id="authTitle">YouDiana Login</h2><input type="email" id="emailUser" placeholder="E-mail"><input type="password" id="passUser" placeholder="Senha"><button class="btn-main" id="btnAuthAction" onclick="executarAuth()">Acessar</button><div style="margin-top:15px;"><button class="btn-switch" onclick="alternarModo()" id="btnSwitchLabel">Criar nova conta</button></div></div></div>
 
     <div id="mainContent">
         <div class="app-logo">YouDiana Smart</div>
-        
         <div class="user-header">
             <span id="txtUserEmail">...</span>
             <button onclick="fazerLogout()" style="background:#000; border-radius:40px; color:#ffffff; padding: 5px 15px; cursor:pointer; border:1px solid #333;">Sair</button>
@@ -107,21 +98,21 @@
             <div class="results-list" id="resultsList"></div>
         </div>
 
-        <div class="player-container">
+        <div class="player-container" id="playerArea" onclick="mostrarControles()">
             <div class="loader" id="videoLoader"></div>
-            <video id="videoPlayer" class="main-video" controls autoplay playsinline></video>
-            <div class="overlay-controls">
-                <button class="btn-overlay" onclick="playPrevious()">⏮</button>
-                <button class="btn-overlay" onclick="skipTime(-10)">-10s</button>
-                <button class="btn-overlay" onclick="skipTime(10)">+10s</button>
-                <button class="btn-overlay" onclick="playNext()">⏭</button>
+            <video id="videoPlayer" class="main-video" playsinline></video>
+            <div class="overlay-controls" id="controlsPanel">
+                <button class="btn-overlay" onclick="event.stopPropagation(); playPrevious()">⏮</button>
+                <button class="btn-overlay" onclick="event.stopPropagation(); skipTime(-10)">-10s</button>
+                <button class="btn-overlay" onclick="event.stopPropagation(); togglePlay()"><span id="playIcon">⏸</span></button>
+                <button class="btn-overlay" onclick="event.stopPropagation(); skipTime(10)">+10s</button>
+                <button class="btn-overlay" onclick="event.stopPropagation(); playNext()">⏭</button>
             </div>
         </div>
 
-        <div class="video-details" style="margin-top:12px; background:var(--card); padding:15px; border-radius:15px;">
+        <div class="video-details">
             <h3 id="playingNow" style="margin:0; font-size: 1.05rem;">Iniciando...</h3>
-            
-            <p id="videoDesc" style="font-size: 0.85rem; color: #bbb; margin-top: 8px; line-height: 1.4;"></p>
+            <p id="videoDesc" onclick="this.classList.toggle('expanded')"></p>
 
             <div style="display:flex; gap:25px; margin-top:12px;">
                 <button onclick="registrarCurtida()" style="background:none; border:none; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;">❤️ <span id="likeCount">0</span></button>
@@ -136,39 +127,22 @@
             </div>
             <div id="commentsBody">
                 <div class="comment-input-group">
-                    <input type="text" id="newComment" placeholder="Comentar...">
-                    <button class="btn-main" style="width: auto; padding: 0 15px; background:#000;" onclick="enviarComentario()">Postar</button>
+                    <input type="text" id="newComment" placeholder="Comentar..."><button class="btn-main" style="width: auto; padding: 0 15px; background:#000;" onclick="enviarComentario()">Postar</button>
                 </div>
                 <div class="comment-list" id="commentList"></div>
             </div>
         </div>
 
-        <div class="highlights-section">
-            <h4 class="section-title">✨ Adicionados recentemente</h4>
-            <div class="scroll-container" id="recentList"></div>
-        </div>
-
-        <div class="highlights-section" id="sectionHistory" style="display:none;">
-            <h4 class="section-title">🕒 Continuar assistindo</h4>
-            <div class="scroll-container" id="historyList"></div>
-        </div>
+        <div class="highlights-section"><h4 class="section-title">✨ Adicionados recentemente</h4><div class="scroll-container" id="recentList"></div></div>
+        <div class="highlights-section" id="sectionHistory" style="display:none;"><h4 class="section-title">🕒 Continuar assistindo</h4><div class="scroll-container" id="historyList"></div></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, increment, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I",
-            authDomain: "youvideo-22f8a.firebaseapp.com",
-            databaseURL: "https://youvideo-22f8a-default-rtdb.firebaseio.com",
-            projectId: "youvideo-22f8a",
-            storageBucket: "youvideo-22f8a.firebasestorage.app",
-            messagingSenderId: "179003131728",
-            appId: "1:179003131728:web:03874cc5df997f6c724e55"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBc-qchU3a3Z2Jr1ijPolIT7PNHZz86G_I", authDomain: "youvideo-22f8a.firebaseapp.com", databaseURL: "https://youvideo-22f8a-default-rtdb.firebaseio.com", projectId: "youvideo-22f8a", storageBucket: "youvideo-22f8a.firebasestorage.app", messagingSenderId: "179003131728", appId: "1:179003131728:web:03874cc5df997f6c724e55" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
@@ -177,49 +151,32 @@
         let currentIndex = -1;
         let userAtual = null;
         let historico = JSON.parse(localStorage.getItem('user_history') || "[]");
+        let controlTimer;
 
-        // AUTH & SPLASH
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splashScreen').style.opacity = '0';
-                setTimeout(() => document.getElementById('splashScreen').style.visibility = 'hidden', 800);
-            }, 3000);
-        });
-
-        window.alternarModo = () => {
-            const t = document.getElementById('authTitle');
-            const isL = t.innerText.includes("Login");
-            t.innerText = isL ? "Criar Conta" : "YouDiana Login";
-            document.getElementById('btnAuthAction').innerText = isL ? "Cadastrar" : "Acessar";
-            document.getElementById('btnSwitchLabel').innerText = isL ? "Já tenho conta" : "Criar nova conta";
-        };
-
-        window.executarAuth = () => {
-            const e = document.getElementById('emailUser').value, p = document.getElementById('passUser').value;
-            const isL = document.getElementById('authTitle').innerText.includes("Login");
-            if(isL) {
-                signInWithEmailAndPassword(auth, e, p).catch(() => alert("Erro no login."));
-            } else {
-                createUserWithEmailAndPassword(auth, e, p).then(u => {
-                    sendEmailVerification(u.user).then(() => { alert("Verifique seu e-mail!"); signOut(auth); alternarModo(); });
-                }).catch(() => alert("Erro no cadastro."));
-            }
-        };
-
+        // AUTH & BOOT
+        window.addEventListener('load', () => { setTimeout(() => { document.getElementById('splashScreen').style.opacity = '0'; setTimeout(() => document.getElementById('splashScreen').style.visibility = 'hidden', 800); }, 3000); });
+        window.alternarModo = () => { const t = document.getElementById('authTitle'); const isL = t.innerText.includes("Login"); t.innerText = isL ? "Criar Conta" : "YouDiana Login"; document.getElementById('btnAuthAction').innerText = isL ? "Cadastrar" : "Acessar"; document.getElementById('btnSwitchLabel').innerText = isL ? "Já tenho conta" : "Criar nova conta"; };
+        window.executarAuth = () => { const e = document.getElementById('emailUser').value, p = document.getElementById('passUser').value; const isL = document.getElementById('authTitle').innerText.includes("Login"); if(isL) signInWithEmailAndPassword(auth, e, p).catch(() => alert("Erro no login.")); else createUserWithEmailAndPassword(auth, e, p).then(u => { sendEmailVerification(u.user).then(() => { alert("Verifique seu e-mail!"); signOut(auth); alternarModo(); }); }).catch(() => alert("Erro no cadastro.")); };
         window.fazerLogout = () => signOut(auth).then(() => location.reload());
+        onAuthStateChanged(auth, (u) => { if (u && u.emailVerified) { userAtual = u; document.getElementById('authScreen').style.display = 'none'; document.getElementById('mainContent').style.display = 'flex'; document.getElementById('txtUserEmail').innerText = u.email; conectarBanco(); } else { document.getElementById('authScreen').style.display = 'flex'; document.getElementById('mainContent').style.display = 'none'; } });
 
-        onAuthStateChanged(auth, (u) => {
-            if (u && u.emailVerified) {
-                userAtual = u;
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'flex';
-                document.getElementById('txtUserEmail').innerText = u.email;
-                conectarBanco();
-            } else {
-                document.getElementById('authScreen').style.display = 'flex';
-                document.getElementById('mainContent').style.display = 'none';
-            }
-        });
+        // CONTROLE DE INTERFACE DO PLAYER
+        window.mostrarControles = () => {
+            const panel = document.getElementById('controlsPanel');
+            panel.classList.add('active');
+            clearTimeout(controlTimer);
+            controlTimer = setTimeout(() => {
+                panel.classList.remove('active');
+            }, 2000); // Some após 2 segundos
+        };
+
+        window.togglePlay = () => {
+            const vp = document.getElementById('videoPlayer');
+            const icon = document.getElementById('playIcon');
+            if(vp.paused) { vp.play(); icon.innerText = "⏸"; }
+            else { vp.pause(); icon.innerText = "▶"; }
+            mostrarControles(); // Reseta o timer ao interagir
+        };
 
         // BANCO & PLAYER
         function conectarBanco() {
@@ -228,8 +185,7 @@
                 if(data) {
                     biblioteca = Object.keys(data).map(k => ({ id_firebase: k, ...data[k] }));
                     if(currentIndex === -1) carregarVideo(biblioteca.length - 1);
-                    renderRecent();
-                    renderHistory();
+                    renderRecent(); renderHistory();
                 }
             });
         }
@@ -238,13 +194,17 @@
             if(idx < 0 || idx >= biblioteca.length) return;
             currentIndex = idx;
             const v = biblioteca[idx];
+            const vp = document.getElementById('videoPlayer');
             
-            // CARREGA VÍDEO E TEXTOS
-            document.getElementById('videoPlayer').src = v.arquivo;
+            vp.src = v.arquivo;
+            vp.play();
+            document.getElementById('playIcon').innerText = "⏸";
             document.getElementById('playingNow').innerText = v.titulo;
             
-            // ATUALIZA A DESCRIÇÃO (CORREÇÃO AQUI)
-            document.getElementById('videoDesc').innerText = v.descricao || "Sem descrição disponível.";
+            // Descrição (reseta expansão ao trocar de vídeo)
+            const d = document.getElementById('videoDesc');
+            d.classList.remove('expanded');
+            d.innerText = v.descricao || "Sem descrição.";
             
             document.getElementById('likeCount').innerText = v.curtidas || 0;
             document.getElementById('shareCount').innerText = v.compartilhamentos || 0;
@@ -254,83 +214,20 @@
             if(historico.length > 15) historico.pop();
             localStorage.setItem('user_history', JSON.stringify(historico));
             
-            renderHistory();
-            carregarComentarios(v.id_firebase);
+            renderHistory(); carregarComentarios(v.id_firebase);
             document.getElementById('commentsBody').style.display = 'none';
         };
 
-        function renderRecent() {
-            const list = [...biblioteca].reverse().slice(0, 15);
-            document.getElementById('recentList').innerHTML = list.map(v => `
-                <div class="video-card" onclick="carregarVideo(${biblioteca.indexOf(v)})">
-                    <div class="thumb-wrapper"><video class="thumb-video" muted><source src="${v.arquivo}"></video></div>
-                    <div class="card-info"><b>${v.titulo}</b></div>
-                </div>`).join('');
-        }
-
-        function renderHistory() {
-            const sec = document.getElementById('sectionHistory');
-            if(historico.length === 0) { sec.style.display = 'none'; return; }
-            sec.style.display = 'block';
-            document.getElementById('historyList').innerHTML = historico.map(v => `
-                <div class="video-card" onclick="reproduzirDoHistorico('${v.id_firebase}')">
-                    <div class="thumb-wrapper"><video class="thumb-video" muted><source src="${v.arquivo}"></video></div>
-                    <div class="card-info"><b>${v.titulo}</b></div>
-                </div>`).join('');
-        }
-
-        window.reproduzirDoHistorico = (id) => {
-            const idx = biblioteca.findIndex(v => v.id_firebase === id);
-            if(idx !== -1) carregarVideo(idx);
-        };
-
-        // UI & ACTIONS
-        window.toggleComments = () => {
-            const b = document.getElementById('commentsBody'), a = document.getElementById('commentArrow');
-            const open = b.style.display === 'block';
-            b.style.display = open ? 'none' : 'block';
-            a.innerText = open ? '▼' : '▲';
-        };
-
+        // ... (renderRecent, renderHistory, registrarCurtida, registrarCompartilhamento, searchVideos, carregarComentarios, enviarComentario permanecem iguais)
+        function renderRecent() { const list = [...biblioteca].reverse().slice(0, 15); document.getElementById('recentList').innerHTML = list.map(v => `<div class="video-card" onclick="carregarVideo(${biblioteca.indexOf(v)})"><div class="thumb-wrapper"><video class="thumb-video" muted><source src="${v.arquivo}"></video></div><div class="card-info"><b>${v.titulo}</b></div></div>`).join(''); }
+        function renderHistory() { const sec = document.getElementById('sectionHistory'); if(historico.length === 0) { sec.style.display = 'none'; return; } sec.style.display = 'block'; document.getElementById('historyList').innerHTML = historico.map(v => `<div class="video-card" onclick="reproduzirDoHistorico('${v.id_firebase}')"><div class="thumb-wrapper"><video class="thumb-video" muted><source src="${v.arquivo}"></video></div><div class="card-info"><b>${v.titulo}</b></div></div>`).join(''); }
+        window.reproduzirDoHistorico = (id) => { const idx = biblioteca.findIndex(v => v.id_firebase === id); if(idx !== -1) carregarVideo(idx); };
+        window.toggleComments = () => { const b = document.getElementById('commentsBody'), a = document.getElementById('commentArrow'); const open = b.style.display === 'block'; b.style.display = open ? 'none' : 'block'; a.innerText = open ? '▼' : '▲'; };
         window.registrarCurtida = () => update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { curtidas: increment(1) });
-
-        window.registrarCompartilhamento = () => {
-            const v = biblioteca[currentIndex];
-            if (navigator.share) {
-                navigator.share({ title: v.titulo, url: window.location.href }).then(() => {
-                    update(ref(db, `videos/${v.id_firebase}`), { compartilhamentos: increment(1) });
-                });
-            } else {
-                navigator.clipboard.writeText(window.location.href); alert("Link copiado!");
-                update(ref(db, `videos/${v.id_firebase}`), { compartilhamentos: increment(1) });
-            }
-        };
-
-        window.searchVideos = () => {
-            const t = document.getElementById('searchInput').value.toLowerCase();
-            const l = document.getElementById('resultsList');
-            if(!t) { l.style.display = 'none'; return; }
-            const f = biblioteca.filter(v => v.titulo.toLowerCase().includes(t));
-            l.innerHTML = f.map(v => `<div class="video-item" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}</div>`).join('');
-            l.style.display = f.length ? 'block' : 'none';
-        };
-
-        function carregarComentarios(id) {
-            onValue(ref(db, `comentarios/${id}`), (s) => {
-                const data = s.val();
-                document.getElementById('commentCount').innerText = data ? Object.keys(data).length : 0;
-                document.getElementById('commentList').innerHTML = data ? Object.values(data).reverse().map(c => `
-                    <div class="comment-item"><span class="comment-user">${c.usuario}</span><span>${c.texto}</span></div>`).join('') : "Sem comentários.";
-            });
-        }
-
-        window.enviarComentario = () => {
-            const i = document.getElementById('newComment');
-            if(!i.value.trim()) return;
-            const refC = push(ref(db, `comentarios/${biblioteca[currentIndex].id_firebase}`));
-            set(refC, { usuario: userAtual.email.split('@')[0], texto: i.value, data: Date.now() });
-            i.value = "";
-        };
+        window.registrarCompartilhamento = () => { const v = biblioteca[currentIndex]; if (navigator.share) { navigator.share({ title: v.titulo, url: window.location.href }).then(() => { update(ref(db, `videos/${v.id_firebase}`), { compartilhamentos: increment(1) }); }); } else { navigator.clipboard.writeText(window.location.href); alert("Link copiado!"); update(ref(db, `videos/${v.id_firebase}`), { compartilhamentos: increment(1) }); } };
+        window.searchVideos = () => { const t = document.getElementById('searchInput').value.toLowerCase(), l = document.getElementById('resultsList'); if(!t) { l.style.display = 'none'; return; } const f = biblioteca.filter(v => v.titulo.toLowerCase().includes(t)); l.innerHTML = f.map(v => `<div class="video-item" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}</div>`).join(''); l.style.display = f.length ? 'block' : 'none'; };
+        function carregarComentarios(id) { onValue(ref(db, `comentarios/${id}`), (s) => { const data = s.val(); document.getElementById('commentCount').innerText = data ? Object.keys(data).length : 0; document.getElementById('commentList').innerHTML = data ? Object.values(data).reverse().map(c => `<div class="comment-item"><span class="comment-user">${c.usuario}</span><span>${c.texto}</span></div>`).join('') : "Sem comentários."; }); }
+        window.enviarComentario = () => { const i = document.getElementById('newComment'); if(!i.value.trim()) return; const refC = push(ref(db, `comentarios/${biblioteca[currentIndex].id_firebase}`)); set(refC, { usuario: userAtual.email.split('@')[0], texto: i.value, data: Date.now() }); i.value = ""; };
 
         window.skipTime = (s) => document.getElementById('videoPlayer').currentTime += s;
         window.playNext = () => carregarVideo((currentIndex + 1) % biblioteca.length);
