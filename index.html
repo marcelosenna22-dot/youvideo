@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouDiana Smart Adaptive</title>
+    <title>YouDiana Smart v5</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
@@ -21,143 +21,172 @@
         }
 
         /* --- AUTH --- */
-        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .auth-container { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
-        .auth-container input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; outline: none; }
+        .auth-container input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; outline: none; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: white; }
+        .btn-switch { background: transparent; color: #ccc; margin-top: 10px; border: none; text-decoration: underline; cursor: pointer; font-size: 0.85rem; }
 
         /* --- LAYOUT --- */
         #mainContent { display: none; width: 100%; max-width: 850px; flex-direction: column; position: relative; }
-        
-        /* HEADER COM USUARIO E SAIR */
         .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%; }
-        .app-logo { font-size: 1.2rem; font-weight: 600; color: white; }
         .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; opacity: 0.8; }
-        .btn-logout { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 12px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; }
+        .btn-logout { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 12px; border-radius: 15px; cursor: pointer; }
 
-        /* SEARCH */
-        .search-container { position: relative; width: 100%; margin-bottom: 15px; }
-        #searchInput { width: 100%; padding: 10px 15px 10px 40px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; box-sizing: border-box; outline: none; }
-        .results-list { position: absolute; top: 45px; width: 100%; background: #111; border-radius: 15px; z-index: 100; display: none; flex-direction: column; max-height: 200px; overflow-y: auto; border: 1px solid #333; }
+        /* --- PESQUISA --- */
+        .search-container { position: relative; width: 100%; margin-bottom: 15px; z-index: 1000; }
+        #searchInput { width: 100%; padding: 12px 15px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; outline: none; box-sizing: border-box; }
+        #resultsList { 
+            position: absolute; top: 50px; left: 0; width: 100%; background: #1a1a1a; 
+            border-radius: 15px; border: 1px solid #333; display: none; flex-direction: column; 
+            max-height: 300px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .search-item { padding: 12px 15px; border-bottom: 1px solid #222; cursor: pointer; font-size: 0.9rem; }
 
         /* --- PLAYER ADAPTATIVO --- */
         .player-container { 
             width: 100%; background: #000; border-radius: 15px; overflow: hidden; 
             position: relative; display: flex; justify-content: center; align-items: center;
-            transition: all 0.5s ease; max-height: 75vh; 
+            transition: all 0.5s ease; max-height: 70vh; 
         }
-        .main-video { width: 100%; max-height: 75vh; display: block; object-fit: contain; }
+        .main-video { width: 100%; max-height: 70vh; display: block; object-fit: contain; }
 
-        /* CONTROLES */
         .overlay-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; z-index: 5; pointer-events: none; }
         .overlay-controls.active { opacity: 1; pointer-events: auto; }
         .btn-overlay { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 50%; cursor: pointer; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; }
+        
         .side-controls { position: absolute; right: 10px; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 20; }
-        .btn-side { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .btn-side span { font-size: 0.6rem; font-weight: 600; }
-        .btn-fs { position: absolute; right: 10px; top: 10px; background: rgba(0,0,0,0.4); border: none; color: white; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; z-index: 10; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .btn-side { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15); color: white; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-side span { font-size: 0.65rem; font-weight: 600; margin-top: 2px; }
 
         /* --- COMENTÁRIOS --- */
         .comments-section { margin-top: 10px; background: var(--card); border-radius: 12px; overflow: hidden; }
-        .comments-header { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 0.85rem; }
+        .comments-header { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 0.9rem; }
         #commentsBody { display: none; padding: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .comment-input-wrapper { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,71,87,0.2); }
-        .comment-input-group { display: flex; gap: 8px; }
-        .comment-input-group input { flex: 1; padding: 10px 15px; border-radius: 20px; border: none; background: #000; color: white; outline: none; font-size: 0.85rem; }
-        .comment-list { max-height: 250px; overflow-y: auto; font-size: 0.8rem; }
-        .comment-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); transition: opacity 0.4s; }
+        .comment-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
         .comment-user { color: var(--primary); font-weight: 600; font-size: 0.75rem; display: block; }
-        .btn-delete-comment { background: none; border: none; color: #555; cursor: pointer; padding: 5px; }
 
-        /* LISTAS */
+        /* --- LISTAS --- */
         .section-title { margin: 20px 0 10px 0; font-size: 0.9rem; font-weight: 600; }
         .scroll-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
         .video-card { flex: 0 0 140px; background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; }
         .thumb-video-item { width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: 0.7; }
-        
+
+        /* --- MODAL SHARE --- */
+        #shareModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; justify-content:center; align-items:center; backdrop-filter: blur(5px); }
+        .share-box { background:#1a1a1a; padding:25px; border-radius:20px; width:280px; text-align:center; border:1px solid #333; }
+        .share-grid { display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px; }
+        .share-opt { cursor:pointer; transition: transform 0.2s; }
+        .share-opt:active { transform: scale(0.9); }
+        .icon-circle { width:50px; height:50px; border-radius:12px; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:white; }
+
         .loader { position: absolute; width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; z-index: 10; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
-<body>
+<body onclick="fecharPesquisa()">
 
     <div id="authScreen">
         <div class="auth-container">
             <h2 id="authTitle">YouDiana Login</h2>
             <input type="email" id="emailUser" placeholder="E-mail">
             <input type="password" id="passUser" placeholder="Senha">
-            <button class="btn-main" onclick="executarAuth()">Acessar</button>
+            <button class="btn-main" id="btnAuthAction" onclick="executarAuth()">Acessar</button>
+            <div style="margin-top:15px;">
+                <button class="btn-switch" onclick="recuperarSenha()">Esqueci minha senha</button><br>
+                <button class="btn-switch" onclick="alternarModo()" id="btnSwitchLabel">Criar nova conta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shareModal" onclick="fecharShare()">
+        <div class="share-box" onclick="event.stopPropagation()">
+            <h3 style="margin:0; font-size:1.1rem;">Compartilhar</h3>
+            <div class="share-grid">
+                <div class="share-opt" onclick="shareRede('wa')">
+                    <div class="icon-circle" style="background:#25D366;">W</div>
+                    <span style="font-size:0.7rem; display:block; margin-top:5px;">WhatsApp</span>
+                </div>
+                <div class="share-opt" onclick="shareRede('fb')">
+                    <div class="icon-circle" style="background:#1877F2;">f</div>
+                    <span style="font-size:0.7rem; display:block; margin-top:5px;">Facebook</span>
+                </div>
+                <div class="share-opt" onclick="shareRede('ig')">
+                    <div class="icon-circle" style="background:linear-gradient(45deg, #f09433, #dc2743, #bc1888);">📸</div>
+                    <span style="font-size:0.7rem; display:block; margin-top:5px;">Instagram</span>
+                </div>
+                <div class="share-opt" onclick="shareRede('copy')">
+                    <div class="icon-circle" style="background:#444;">🔗</div>
+                    <span style="font-size:0.7rem; display:block; margin-top:5px;">Link</span>
+                </div>
+            </div>
+            <button class="btn-main" style="margin-top:20px; background:#333; height:40px; padding:0;" onclick="fecharShare()">Cancelar</button>
         </div>
     </div>
 
     <div id="mainContent">
         <header class="app-header">
-            <div class="app-logo">YouDiana Smart</div>
+            <div style="font-weight:600; font-size:1.1rem;">YouDiana <span style="color:var(--primary)">Smart</span></div>
             <div class="user-info">
                 <span id="txtUserEmail">...</span>
                 <button class="btn-logout" onclick="fazerLogout()">Sair</button>
             </div>
         </header>
         
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Pesquisar..." oninput="searchVideos()">
-            <div class="results-list" id="resultsList"></div>
+        <div class="search-container" onclick="event.stopPropagation()">
+            <input type="text" id="searchInput" placeholder="Buscar vídeos..." oninput="searchVideos()">
+            <div id="resultsList"></div>
         </div>
 
         <div class="player-container" id="playerArea" onclick="mostrarControles()">
             <div class="loader" id="videoLoader"></div>
             <video id="videoPlayer" class="main-video" playsinline></video>
-            <button class="btn-fs" onclick="toggleFullScreen(event)">⛶</button>
 
-            <div class="side-controls">
+            <div class="side-controls" onclick="event.stopPropagation()">
                 <button class="btn-side" onclick="registrarCurtida()">❤️ <span id="likeCountSide">0</span></button>
                 <button class="btn-side" onclick="focarComentario()">🗨 <span id="commentCountSide">0</span></button>
-                <button class="btn-side" onclick="registrarCompartilhamento()">↪ <span id="shareCountSide">0</span></button>
+                <button class="btn-side" onclick="abrirShare()">↪ <span id="shareCountSide">0</span></button>
             </div>
 
             <div class="overlay-controls" id="controlsPanel">
                 <button class="btn-overlay" onclick="event.stopPropagation(); playPrevious()">⏮</button>
-                <button class="btn-overlay" onclick="event.stopPropagation(); skipTime(-10)">-10</button>
-                <button class="btn-overlay" style="width: 55px; height: 55px;" onclick="event.stopPropagation(); togglePlay()"><span id="playIcon">⏸</span></button>
-                <button class="btn-overlay" onclick="event.stopPropagation(); skipTime(10)">+10</button>
+                <button class="btn-overlay" style="width:55px; height:55px;" onclick="event.stopPropagation(); togglePlay()"><span id="playIcon">⏸</span></button>
                 <button class="btn-overlay" onclick="event.stopPropagation(); playNext()">⏭</button>
             </div>
         </div>
 
-        <div style="margin-top: 10px; background: var(--card); padding: 12px; border-radius: 12px;">
+        <div style="margin-top: 12px; background: var(--card); padding: 15px; border-radius: 12px;">
             <h3 id="playingNow" style="margin:0; font-size: 1rem;">Carregando...</h3>
-            <p id="videoDesc" style="font-size: 0.8rem; color: #aaa;"></p>
+            <p id="videoDesc" style="font-size: 0.8rem; color: #aaa; margin: 8px 0 0 0; line-height:1.4;"></p>
         </div>
 
-        <div class="comments-section" id="sectionComments">
+        <div class="comments-section">
             <div class="comments-header" onclick="toggleComments()">
                 <span>🗨 Comentários (<span id="commentCount">0</span>)</span>
                 <span id="commentArrow">▼</span>
             </div>
             <div id="commentsBody">
-                <div class="comment-input-wrapper">
-                    <div class="comment-input-group">
-                        <input type="text" id="newComment" placeholder="Comentar...">
-                        <button class="btn-main" style="width: auto; padding: 0 15px; background: #000;" onclick="enviarComentario()">Postar</button>
-                    </div>
+                <div style="display:flex; gap:8px; margin-bottom:15px;">
+                    <input type="text" id="newComment" placeholder="Escreva algo..." style="flex:1; padding:12px; border-radius:20px; border:none; background:#000; color:white; outline:none;">
+                    <button class="btn-main" style="width:auto; padding:0 20px; background: #000;" onclick="enviarComentario()">Enviar</button>
                 </div>
-                <div class="comment-list" id="commentList"></div>
+                <div id="commentList" style="max-height:200px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <h4 class="section-title">✨ Adicionados recentemente</h4>
+        <h4 class="section-title">✨ Adicionados Recentemente</h4>
         <div class="scroll-container" id="recentList"></div>
 
         <div id="containerHistorico" style="display:none;">
-            <h4 class="section-title">🕒 Continuar assistindo</h4>
+            <h4 class="section-title">🕒 Continuar Assistindo</h4>
             <div class="scroll-container" id="historyList"></div>
         </div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, onValue, set, push, update, increment, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -180,49 +209,88 @@
     let controlTimer;
     let historico = JSON.parse(localStorage.getItem('user_history_smart')) || [];
 
-    // AUTH
+    // --- PESQUISA ---
+    window.searchVideos = () => {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const resultsBox = document.getElementById('resultsList');
+        if (!query.trim()) { resultsBox.style.display = 'none'; return; }
+        const filtrados = biblioteca.filter(v => v.titulo.toLowerCase().includes(query));
+        resultsBox.innerHTML = filtrados.map(v => `<div class="search-item" onclick="carregarVideo(${biblioteca.indexOf(v)}); fecharPesquisa();">${v.titulo}</div>`).join('');
+        resultsBox.style.display = filtrados.length ? 'flex' : 'none';
+    };
+
+    window.fecharPesquisa = () => {
+        document.getElementById('resultsList').style.display = 'none';
+        document.getElementById('searchInput').value = '';
+    };
+
+    // --- SHARE MODAL ---
+    window.abrirShare = () => document.getElementById('shareModal').style.display = 'flex';
+    window.fecharShare = () => document.getElementById('shareModal').style.display = 'none';
+    window.shareRede = (rede) => {
+        const v = biblioteca[currentIndex];
+        const urlApp = window.location.href;
+        const msg = encodeURIComponent(`Olha esse vídeo: ${v.titulo}`);
+        const link = encodeURIComponent(urlApp);
+        let shareUrl = "";
+
+        if(rede === 'wa') shareUrl = `https://api.whatsapp.com/send?text=${msg}%20${link}`;
+        else if(rede === 'fb') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${link}`;
+        else if(rede === 'ig') { shareUrl = `https://www.instagram.com/`; alert("Abra o App para postar o link nos Stories!"); }
+        else if(rede === 'copy') { navigator.clipboard.writeText(urlApp); alert("Link Copiado!"); fecharShare(); return; }
+
+        if(shareUrl) {
+            window.open(shareUrl, '_blank');
+            update(ref(db, `videos/${v.id_firebase}`), { compartilhamentos: increment(1) });
+        }
+        fecharShare();
+    };
+
+    // --- AUTH ---
+    window.alternarModo = () => {
+        const t = document.getElementById('authTitle');
+        const isLogin = t.innerText.includes("Login");
+        t.innerText = isLogin ? "Criar Conta" : "YouDiana Login";
+        document.getElementById('btnAuthAction').innerText = isLogin ? "Cadastrar" : "Acessar";
+        document.getElementById('btnSwitchLabel').innerText = isLogin ? "Já tenho conta" : "Criar nova conta";
+    };
+
     window.executarAuth = () => {
         const email = document.getElementById('emailUser').value;
         const senha = document.getElementById('passUser').value;
-        signInWithEmailAndPassword(auth, email, senha).catch(() => alert("Erro no login"));
+        const isLogin = document.getElementById('authTitle').innerText.includes("Login");
+        if (isLogin) {
+            signInWithEmailAndPassword(auth, email, senha).catch(e => alert("E-mail ou senha inválidos."));
+        } else {
+            createUserWithEmailAndPassword(auth, email, senha).then(res => {
+                sendEmailVerification(res.user); alert("Verifique seu e-mail!"); signOut(auth); alternarModo();
+            }).catch(e => alert(e.message));
+        }
+    };
+
+    window.recuperarSenha = () => {
+        const email = document.getElementById('emailUser').value;
+        if (!email) return alert("Digite o e-mail primeiro!");
+        sendPasswordResetEmail(auth, email).then(() => alert("E-mail de recuperação enviado!")).catch(e => alert(e.message));
     };
 
     window.fazerLogout = () => signOut(auth);
 
     onAuthStateChanged(auth, (user) => {
-        if (user) {
+        if (user && user.emailVerified) {
             userAtual = user;
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'flex';
-            document.getElementById('txtUserEmail').innerText = user.email;
+            document.getElementById('txtUserEmail').innerText = user.email.split('@')[0];
             conectarBanco();
         } else {
             document.getElementById('authScreen').style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
+            if(user) signOut(auth);
         }
     });
 
-    // PLAYER LOGIC
-    window.mostrarControles = () => {
-        const p = document.getElementById('controlsPanel');
-        p.classList.add('active');
-        clearTimeout(controlTimer);
-        controlTimer = setTimeout(() => p.classList.remove('active'), 2500);
-    };
-
-    window.togglePlay = () => {
-        const vp = document.getElementById('videoPlayer');
-        vp.paused ? vp.play() : vp.pause();
-        document.getElementById('playIcon').innerText = vp.paused ? "▶" : "⏸";
-    };
-
-    window.toggleFullScreen = (e) => {
-        e.stopPropagation();
-        const container = document.getElementById('playerArea');
-        if (!document.fullscreenElement) container.requestFullscreen?.();
-        else document.exitFullscreen?.();
-    };
-
+    // --- PLAYER ---
     function conectarBanco() {
         onValue(ref(db, 'videos'), (snap) => {
             const data = snap.val();
@@ -239,21 +307,17 @@
         currentIndex = idx;
         const v = biblioteca[idx];
         const vp = document.getElementById('videoPlayer');
-        
         vp.src = v.arquivo;
         vp.play();
 
         document.getElementById('playingNow').innerText = v.titulo;
-        document.getElementById('videoDesc').innerText = v.descricao || "";
+        document.getElementById('videoDesc').innerText = v.descricao || "Sem descrição.";
         document.getElementById('likeCountSide').innerText = v.curtidas || 0;
         document.getElementById('shareCountSide').innerText = v.compartilhamentos || 0;
         
-        // Salvar Histórico
         historico = historico.filter(i => i.id_firebase !== v.id_firebase);
         historico.unshift(v);
-        if(historico.length > 15) historico.pop();
-        localStorage.setItem('user_history_smart', JSON.stringify(historico));
-
+        localStorage.setItem('user_history_smart', JSON.stringify(historico.slice(0, 15)));
         renderLists();
         carregarComentarios(v.id_firebase);
     };
@@ -261,103 +325,81 @@
     function carregarComentarios(videoId) {
         onValue(ref(db, `comentarios/${videoId}`), (s) => {
             const data = s.val();
-            const count = data ? Object.keys(data).length : 0;
-            document.getElementById('commentCount').innerText = count;
-            document.getElementById('commentCountSide').innerText = count;
+            document.getElementById('commentCount').innerText = data ? Object.keys(data).length : 0;
+            document.getElementById('commentCountSide').innerText = document.getElementById('commentCount').innerText;
             const list = document.getElementById('commentList');
-            if(!data) { list.innerHTML = "Seja o primeiro!"; return; }
-
+            if(!data) { list.innerHTML = "<p style='opacity:0.5; font-size:0.8rem;'>Ninguém comentou ainda.</p>"; return; }
             list.innerHTML = Object.keys(data).reverse().map(key => {
                 const c = data[key];
-                const isOwner = userAtual && c.uid === userAtual.uid;
-                return `
-                    <div class="comment-item" id="c-${key}">
-                        <div style="flex:1">
-                            <span class="comment-user">${c.usuario}</span>
-                            ${c.texto}
-                        </div>
-                        ${isOwner ? `<button class="btn-delete-comment" onclick="excluirComentario('${key}')">🗑️</button>` : ''}
-                    </div>
-                `;
+                return `<div class="comment-item">
+                    <div style="flex:1"><span class="comment-user">${c.usuario}</span>${c.texto}</div>
+                    ${userAtual && c.uid === userAtual.uid ? `<button style="background:none; border:none; cursor:pointer;" onclick="excluirComentario('${key}')">🗑️</button>` : ''}
+                </div>`;
             }).join('');
         });
     }
 
-    window.excluirComentario = (commentId) => {
-        if(confirm("Apagar comentário?")) {
-            const videoId = biblioteca[currentIndex].id_firebase;
-            remove(ref(db, `comentarios/${videoId}/${commentId}`));
-        }
-    };
+    window.excluirComentario = (id) => confirm("Apagar este comentário?") && remove(ref(db, `comentarios/${biblioteca[currentIndex].id_firebase}/${id}`));
 
     window.enviarComentario = () => {
-        const input = document.getElementById('newComment');
-        if(!input.value.trim()) return;
-        const videoId = biblioteca[currentIndex].id_firebase;
-        push(ref(db, `comentarios/${videoId}`), {
-            uid: userAtual.uid,
-            usuario: userAtual.email.split('@')[0],
-            texto: input.value,
-            data: Date.now()
+        const inp = document.getElementById('newComment');
+        if(!inp.value.trim()) return;
+        push(ref(db, `comentarios/${biblioteca[currentIndex].id_firebase}`), {
+            uid: userAtual.uid, usuario: userAtual.email.split('@')[0], texto: inp.value, data: Date.now()
         });
-        input.value = "";
-    };
-
-    window.focarComentario = () => {
-        document.getElementById('commentsBody').style.display = 'block';
-        const input = document.getElementById('newComment');
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        input.focus();
+        inp.value = "";
     };
 
     window.toggleComments = () => {
         const b = document.getElementById('commentsBody');
-        b.style.display = b.style.display === 'block' ? 'none' : 'block';
+        const arrow = document.getElementById('commentArrow');
+        const isVisible = b.style.display === 'block';
+        b.style.display = isVisible ? 'none' : 'block';
+        arrow.innerText = isVisible ? '▼' : '▲';
     };
 
-    window.registrarCurtida = () => update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { curtidas: increment(1) });
-    
-    window.registrarCompartilhamento = () => {
-        navigator.clipboard.writeText(window.location.href);
-        alert("Link copiado!");
-        update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { compartilhamentos: increment(1) });
+    window.focarComentario = () => {
+        document.getElementById('commentsBody').style.display = 'block';
+        document.getElementById('newComment').focus();
+    };
+
+    window.mostrarControles = () => {
+        const p = document.getElementById('controlsPanel');
+        p.classList.add('active');
+        clearTimeout(controlTimer);
+        controlTimer = setTimeout(() => p.classList.remove('active'), 2500);
+    };
+
+    window.togglePlay = () => {
+        const vp = document.getElementById('videoPlayer');
+        vp.paused ? vp.play() : vp.pause();
+        document.getElementById('playIcon').innerText = vp.paused ? "▶" : "⏸";
     };
 
     function renderLists() {
-        // Recentes
-        const recent = [...biblioteca].reverse().slice(0, 10);
+        const recent = [...biblioteca].reverse().slice(0, 12);
         document.getElementById('recentList').innerHTML = recent.map(v => `
             <div class="video-card" onclick="carregarVideo(${biblioteca.indexOf(v)})">
                 <video class="thumb-video-item" src="${v.arquivo}"></video>
-                <div style="padding:5px; font-size:0.7rem;"><b>${v.titulo}</b></div>
+                <div style="padding:8px; font-size:0.7rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><b>${v.titulo}</b></div>
             </div>`).join('');
 
-        // Historico
         if(historico.length > 0) {
             document.getElementById('containerHistorico').style.display = 'block';
             document.getElementById('historyList').innerHTML = historico.map(v => {
                 const globalIdx = biblioteca.findIndex(b => b.id_firebase === v.id_firebase);
-                return `
+                return globalIdx !== -1 ? `
                     <div class="video-card" onclick="carregarVideo(${globalIdx})">
                         <video class="thumb-video-item" src="${v.arquivo}"></video>
-                        <div style="padding:5px; font-size:0.7rem;"><b>${v.titulo}</b></div>
-                    </div>`;
+                        <div style="padding:8px; font-size:0.7rem;"><b>${v.titulo}</b></div>
+                    </div>` : '';
             }).join('');
         }
     }
 
-    window.searchVideos = () => {
-        const t = document.getElementById('searchInput').value.toLowerCase();
-        const l = document.getElementById('resultsList');
-        if(!t) { l.style.display = 'none'; return; }
-        const f = biblioteca.filter(v => v.titulo.toLowerCase().includes(t));
-        l.innerHTML = f.map(v => `<div style="padding:10px; border-bottom:1px solid #222; cursor:pointer;" onclick="carregarVideo(${biblioteca.indexOf(v)})">${v.titulo}</div>`).join('');
-        l.style.display = f.length ? 'flex' : 'none';
-    };
-
+    window.registrarCurtida = () => update(ref(db, `videos/${biblioteca[currentIndex].id_firebase}`), { curtidas: increment(1) });
     window.playNext = () => carregarVideo((currentIndex + 1) % biblioteca.length);
     window.playPrevious = () => carregarVideo((currentIndex - 1 + biblioteca.length) % biblioteca.length);
-    window.skipTime = (s) => document.getElementById('videoPlayer').currentTime += s;
 
     const loader = document.getElementById('videoLoader'), vp = document.getElementById('videoPlayer');
     vp.onwaiting = () => loader.style.display = 'block';
