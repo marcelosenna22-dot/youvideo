@@ -31,16 +31,15 @@
         .app-logo { font-size: 1.4rem; font-weight: 600; color: white; margin-bottom: 15px; align-self: flex-start; }
         .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.75rem; opacity: 0.7; }
         
-        /* BUSCA */
         .search-container { position: relative; width: 100%; margin-bottom: 20px; }
         #searchInput { width: 100%; padding: 12px 20px 12px 45px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: var(--card); color: white; box-sizing: border-box; outline: none; }
         .search-icon-fixed { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; }
         .results-list { position: absolute; top: 45px; width: 100%; background: black; border-radius: 15px; z-index: 100; display: flex; flex-direction: column; max-height: 200px; overflow-y: auto; }
         .video-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; color: white; }
 
-        /* PLAYER COM AUTO-HIDE CONTROLS */
+        /* PLAYER */
         .player-container { width: 100%; background: #000; border-radius: 15px; overflow: hidden; position: relative; max-height: 75vh; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .main-video { max-width: 100%; max-height: 75vh; display: block; }
+        .main-video { width: 100%; max-height: 75vh; display: block; }
         
         .overlay-controls { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
@@ -51,18 +50,15 @@
         .overlay-controls.active { opacity: 1; pointer-events: auto; }
 
         .btn-overlay { background: rgba(0,0,0,0.6); color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; min-width: 50px; }
+        .btn-fs { position: absolute; right: 15px; bottom: 15px; min-width: 45px; padding: 10px; border-radius: 10px; font-size: 1.2rem; }
+        
         .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* DESCRIÇÃO EXPANSÍVEL */
         .video-details { margin-top:12px; background:var(--card); padding:15px; border-radius:15px; }
-        #videoDesc { 
-            font-size: 0.85rem; color: #bbb; margin-top: 8px; line-height: 1.4; 
-            cursor: pointer; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
-        }
+        #videoDesc { font-size: 0.85rem; color: #bbb; margin-top: 8px; line-height: 1.4; cursor: pointer; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         #videoDesc.expanded { -webkit-line-clamp: unset; display: block; color: #fff; }
 
-        /* COMENTÁRIOS & LISTAS */
         .comments-section { margin-top: 10px; background: var(--card); border-radius: 15px; overflow: hidden; }
         .comments-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         #commentsBody { display: none; padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
@@ -71,6 +67,7 @@
         .comment-list { max-height: 200px; overflow-y: auto; font-size: 0.85rem; }
         .comment-item { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .comment-user { color: var(--primary); font-weight: 600; font-size: 0.75rem; display: block; }
+        
         .section-title { margin: 25px 0 10px 0; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .scroll-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; width: 100%; }
         .video-card { flex: 0 0 150px; background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer; }
@@ -82,7 +79,18 @@
 <body onclick="document.getElementById('resultsList').style.display='none'">
 
     <div id="splashScreen"><div class="splash-logo">YouDiana Smart</div><p style="opacity:0.5; font-size:0.8rem; margin-top:10px;">Carregando...</p></div>
-    <div id="authScreen"><div class="auth-container"><h2 id="authTitle">YouDiana Login</h2><input type="email" id="emailUser" placeholder="E-mail"><input type="password" id="passUser" placeholder="Senha"><button class="btn-main" id="btnAuthAction" onclick="executarAuth()">Acessar</button><div style="margin-top:15px;"><button class="btn-switch" onclick="alternarModo()" id="btnSwitchLabel">Criar nova conta</button></div></div></div>
+    
+    <div id="authScreen">
+        <div class="auth-container">
+            <h2 id="authTitle">YouDiana Login</h2>
+            <input type="email" id="emailUser" placeholder="E-mail">
+            <input type="password" id="passUser" placeholder="Senha">
+            <button class="btn-main" id="btnAuthAction" onclick="executarAuth()">Acessar</button>
+            <div style="margin-top:15px;">
+                <button class="btn-switch" onclick="alternarModo()" id="btnSwitchLabel">Criar nova conta</button>
+            </div>
+        </div>
+    </div>
 
     <div id="mainContent">
         <div class="app-logo">YouDiana Smart</div>
@@ -106,14 +114,13 @@
                 <button class="btn-overlay" onclick="event.stopPropagation(); togglePlay()"><span id="playIcon">⏸</span></button>
                 <button class="btn-overlay" onclick="event.stopPropagation(); skipTime(10)">+10s</button>
                 <button class="btn-overlay" onclick="event.stopPropagation(); playNext()">⏭</button>
-                <button class="btn-overlay" onclick="event.stopPropagation(); toggleFullScreen()" style="position: absolute; right: 15px; bottom: 15px; min-width: 40px; padding: 10px;">⛶</button>
+                <button class="btn-overlay btn-fs" onclick="toggleFullScreen(event)">⛶</button>
             </div>
         </div>
 
         <div class="video-details">
             <h3 id="playingNow" style="margin:0; font-size: 1.05rem;">Iniciando...</h3>
             <p id="videoDesc" onclick="this.classList.toggle('expanded')"></p>
-
             <div style="display:flex; gap:25px; margin-top:12px;">
                 <button onclick="registrarCurtida()" style="background:none; border:none; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;">❤️ <span id="likeCount">0</span></button>
                 <button onclick="registrarCompartilhamento()" style="background:none; border:none; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;">↪ <span id="shareCount">0</span></button>
@@ -127,7 +134,8 @@
             </div>
             <div id="commentsBody">
                 <div class="comment-input-group">
-                    <input type="text" id="newComment" placeholder="Comentar..."><button class="btn-main" style="width: auto; padding: 0 15px; background:#000;" onclick="enviarComentario()">Postar</button>
+                    <input type="text" id="newComment" placeholder="Comentar...">
+                    <button class="btn-main" style="width: auto; padding: 0 15px; background:#000;" onclick="enviarComentario()">Postar</button>
                 </div>
                 <div class="comment-list" id="commentList"></div>
             </div>
@@ -153,21 +161,19 @@
         let historico = JSON.parse(localStorage.getItem('user_history') || "[]");
         let controlTimer;
 
-        // AUTH & BOOT
+        // AUTH
         window.addEventListener('load', () => { setTimeout(() => { document.getElementById('splashScreen').style.opacity = '0'; setTimeout(() => document.getElementById('splashScreen').style.visibility = 'hidden', 800); }, 3000); });
         window.alternarModo = () => { const t = document.getElementById('authTitle'); const isL = t.innerText.includes("Login"); t.innerText = isL ? "Criar Conta" : "YouDiana Login"; document.getElementById('btnAuthAction').innerText = isL ? "Cadastrar" : "Acessar"; document.getElementById('btnSwitchLabel').innerText = isL ? "Já tenho conta" : "Criar nova conta"; };
         window.executarAuth = () => { const e = document.getElementById('emailUser').value, p = document.getElementById('passUser').value; const isL = document.getElementById('authTitle').innerText.includes("Login"); if(isL) signInWithEmailAndPassword(auth, e, p).catch(() => alert("Erro no login.")); else createUserWithEmailAndPassword(auth, e, p).then(u => { sendEmailVerification(u.user).then(() => { alert("Verifique seu e-mail!"); signOut(auth); alternarModo(); }); }).catch(() => alert("Erro no cadastro.")); };
         window.fazerLogout = () => signOut(auth).then(() => location.reload());
         onAuthStateChanged(auth, (u) => { if (u && u.emailVerified) { userAtual = u; document.getElementById('authScreen').style.display = 'none'; document.getElementById('mainContent').style.display = 'flex'; document.getElementById('txtUserEmail').innerText = u.email; conectarBanco(); } else { document.getElementById('authScreen').style.display = 'flex'; document.getElementById('mainContent').style.display = 'none'; } });
 
-        // CONTROLE DE INTERFACE DO PLAYER
+        // INTERFACE
         window.mostrarControles = () => {
             const panel = document.getElementById('controlsPanel');
             panel.classList.add('active');
             clearTimeout(controlTimer);
-            controlTimer = setTimeout(() => {
-                panel.classList.remove('active');
-            }, 2000);
+            controlTimer = setTimeout(() => { panel.classList.remove('active'); }, 2500);
         };
 
         window.togglePlay = () => {
@@ -178,18 +184,20 @@
             mostrarControles();
         };
 
-        // FUNÇÃO TELA CHEIA
-        window.toggleFullScreen = () => {
-            const el = document.getElementById('playerArea');
-            if (!document.fullscreenElement) {
-                if (el.requestFullscreen) el.requestFullscreen();
-                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        // TELA CHEIA FUNCIONAL
+        window.toggleFullScreen = (e) => {
+            if(e) e.stopPropagation();
+            const vp = document.getElementById('videoPlayer');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (vp.requestFullscreen) vp.requestFullscreen();
+                else if (vp.webkitRequestFullscreen) vp.webkitRequestFullscreen();
             } else {
                 if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             }
         };
 
-        // BANCO & PLAYER
+        // BANCO
         function conectarBanco() {
             onValue(ref(db, 'videos'), (snap) => {
                 const data = snap.val();
@@ -206,16 +214,11 @@
             currentIndex = idx;
             const v = biblioteca[idx];
             const vp = document.getElementById('videoPlayer');
-            
             vp.src = v.arquivo;
             vp.play();
             document.getElementById('playIcon').innerText = "⏸";
             document.getElementById('playingNow').innerText = v.titulo;
-            
-            const d = document.getElementById('videoDesc');
-            d.classList.remove('expanded');
-            d.innerText = v.descricao || "Sem descrição.";
-            
+            document.getElementById('videoDesc').innerText = v.descricao || "Sem descrição.";
             document.getElementById('likeCount').innerText = v.curtidas || 0;
             document.getElementById('shareCount').innerText = v.compartilhamentos || 0;
             
@@ -223,9 +226,7 @@
             historico.unshift(v);
             if(historico.length > 15) historico.pop();
             localStorage.setItem('user_history', JSON.stringify(historico));
-            
             renderHistory(); carregarComentarios(v.id_firebase);
-            document.getElementById('commentsBody').style.display = 'none';
         };
 
         function renderRecent() { const list = [...biblioteca].reverse().slice(0, 15); document.getElementById('recentList').innerHTML = list.map(v => `<div class="video-card" onclick="carregarVideo(${biblioteca.indexOf(v)})"><div class="thumb-wrapper"><video class="thumb-video" muted><source src="${v.arquivo}"></video></div><div class="card-info"><b>${v.titulo}</b></div></div>`).join(''); }
