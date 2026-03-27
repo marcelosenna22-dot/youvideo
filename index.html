@@ -59,7 +59,7 @@
         .comments-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         #commentsBody { display: none; padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
         .comment-input-group { display: flex; gap: 10px; margin-bottom: 12px; }
-        .comment-input-group input { flex: 1; padding: 10px; border-radius: 8px; border: none; background: rgba(0,0,0,1); color: white; font-size: 0.85rem; outline: none; }
+        .comment-input-group input { flex: 1; padding: 10px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 0.85rem; outline: none; }
         .comment-list { max-height: 200px; overflow-y: auto; font-size: 0.85rem; }
         .comment-item { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .comment-user { color: var(--primary); font-weight: 600; font-size: 0.75rem; display: block; }
@@ -87,11 +87,56 @@
             <input type="email" id="emailUser" placeholder="E-mail">
             <input type="password" id="passUser" placeholder="Senha">
             <button class="btn-main" id="btnAuthAction" onclick="executarAuth()">Acessar</button>
-background 
+            <div style="margin-top: 15px;">
+                <button class="btn-switch" onclick="alternarModo()" id="btnSwitchLabel">Criar nova conta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <div class="app-logo">YouDiana Smart</div>
+        
+        <div class="user-header">
+            <span id="txtUserEmail">...</span>
+            <button onclick="fazerLogout()" style="background:none; border:none; color:var(--primary); cursor:pointer;">Sair</button>
+        </div>
+
+        <div class="search-container" onclick="event.stopPropagation()">
+            <span class="search-icon-fixed">🔍</span>
+            <input type="text" id="searchInput" placeholder="Pesquisar..." oninput="searchVideos()">
+            <div class="results-list" id="resultsList"></div>
+        </div>
+
+        <div class="player-container">
+            <div class="loader" id="videoLoader"></div>
+            <video id="videoPlayer" class="main-video" controls autoplay playsinline></video>
+            <div class="overlay-controls">
+                <button class="btn-overlay" onclick="playPrevious()">⏮</button>
+                <button class="btn-overlay" onclick="skipTime(-10)">-10s</button>
+                <button class="btn-overlay" onclick="skipTime(10)">+10s</button>
+                <button class="btn-overlay" onclick="playNext()">⏭</button>
+            </div>
+        </div>
+
+        <div class="video-details" style="margin-top:12px; background:var(--card); padding:15px; border-radius:15px;">
+            <h3 id="playingNow" style="margin:0; font-size: 1.05rem;">Iniciando...</h3>
+            <div style="display:flex; gap:25px; margin-top:12px;">
+                <button onclick="registrarCurtida()" style="background:none; border:none; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;">❤️ <span id="likeCount">0</span></button>
+                <button onclick="registrarCompartilhamento()" style="background:none; border:none; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;">↪ <span id="shareCount">0</span></button>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <div class="comments-header" onclick="toggleComments()">
+                <span style="font-weight: 600; font-size: 0.85rem;">🗨 Comentários (<span id="commentCount">0</span>)</span>
+                <span id="commentArrow">▼</span>
+            </div>
+            <div id="commentsBody">
                 <div class="comment-input-group">
                     <input type="text" id="newComment" placeholder="Comentar...">
-                    <button class="btn-main" style="width: auto; padding: 0 15px; background:#000;" onclick="enviarComentario()">Postar</button>
-                               <div class="comment-list" id="commentList"></div>
+                    <button class="btn-main" style="width: auto; padding: 0 15px;" onclick="enviarComentario()">Postar</button>
+                </div>
+                <div class="comment-list" id="commentList"></div>
             </div>
         </div>
 
